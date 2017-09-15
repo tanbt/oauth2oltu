@@ -1,11 +1,12 @@
 package com.tanbt.oauth2oltu.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+
+/**
+ * https://docs.jboss.org/hibernate/stable/annotations/reference/en/html/entity.html
+ */
 
 @Entity
 @Table(name="users")
@@ -19,7 +20,11 @@ public class User {
 
     private String email;
     private String password;
+
+    @Column(name = "first_name")
     private String firstname;
+
+    @Column(name = "last_name")
     private String lastname;
     private int organization;
 
@@ -33,6 +38,10 @@ public class User {
         this.firstname = firstname;
         this.lastname = lastname;
         this.organization = organization;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getEmail() {
