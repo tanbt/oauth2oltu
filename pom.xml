@@ -13,7 +13,7 @@
         <junit.version>4.12</junit.version>
         <servlet.version>3.1.0</servlet.version>
         <servlet.version>3.0.1</servlet.version>
-        <mysql.connector.version>5.1.9</mysql.connector.version>
+        <mysql.connector.version>5.1.44</mysql.connector.version>
 
         <log4j.version>1.7.25</log4j.version>
         <spring-data-mongodb>1.10.3.RELEASE</spring-data-mongodb>
@@ -106,13 +106,13 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>${servlet.version}</version>
         </dependency>
+
         <!-- MySQL database driver -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.connector.version}</version>
         </dependency>
-
         <!--MongoDB-->
         <dependency>
             <groupId>org.mongodb</groupId>
