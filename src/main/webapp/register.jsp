@@ -6,8 +6,7 @@
     <title>Registration</title>
 </head>
 <body>
-<%--@elvariable id="User" type="com.tanbt.oauth2oltu.model.User"--%>
-<form:form id="regForm" modelAttribute="User" action="registerProcess" method="post">
+<form:form id="regForm" modelAttribute="user" action="registerProcess" method="post">
     <table align="center">
         <tr>
             <td>
@@ -74,7 +73,7 @@
         <tr></tr>
         <tr>
             <td></td>
-            <td><a href="home.jsp">Home</a>
+            <td><a href="index.jsp">Home</a>
             </td>
         </tr>
     </table>

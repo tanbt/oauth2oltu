@@ -8,7 +8,7 @@
 </head>
 <body>
 <%--@elvariable id="Login" type="com.tanbt.oauth2oltu.model.Login"--%>
-<form:form id="loginForm" modelAttribute="Login" action="loginProcess" method="post">
+<form:form id="loginForm" modelAttribute="login" action="loginProcess" method="post">
     <table align="center">
         <tr>
             <td>
@@ -35,7 +35,7 @@
         <tr></tr>
         <tr>
             <td></td>
-            <td><a href="home.jsp">Home</a>
+            <td><a href="index.jsp">Home</a>
             </td>
         </tr>
     </table>
