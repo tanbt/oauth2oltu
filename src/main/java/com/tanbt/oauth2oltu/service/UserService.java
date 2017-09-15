@@ -9,6 +9,7 @@ import com.tanbt.oauth2oltu.repository.mysql.MySQLRepository;
 
 public class UserService {
 
+    //todo: error: this is MongoDB repo
     @Autowired
     private MySQLRepository mySQLRepository;
 
