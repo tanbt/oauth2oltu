@@ -5,19 +5,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.tanbt.oauth2oltu.dao.UserDao;
 import com.tanbt.oauth2oltu.entity.User;
+import com.tanbt.oauth2oltu.service.UserService;
 
 @Controller
 public class RegistrationController {
+
     @Autowired
-    public UserDao userDao;
+    @Qualifier("userService")
+    UserService userService;
 
     @RequestMapping(value = "/register", method = RequestMethod.GET)
     public ModelAndView showRegister(HttpServletRequest request,
@@ -27,11 +30,18 @@ public class RegistrationController {
         return mav;
     }
 
+    /**
+     * https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.entity-persistence
+     *
+     * @param request
+     * @param response
+     * @param user
+     * @return
+     */
     @RequestMapping(value = "/registerProcess", method = RequestMethod.POST)
     public ModelAndView addUser(HttpServletRequest request,
             HttpServletResponse response, @ModelAttribute("user") User user) {
-        userDao.register(user);
-
+        userService.save(user);
         return new ModelAndView("welcome", "firstname", user.getFirstname());
     }
 }

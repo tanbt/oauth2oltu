@@ -10,7 +10,7 @@
     <table align="center">
         <tr>
             <td>
-                <form:label path="email">Username</form:label>
+                <form:label path="email">Email</form:label>
             </td>
             <td>
                 <form:input path="email" name="email" id="email" />
