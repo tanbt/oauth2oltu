@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.tanbt.oauth2oltu.dao.UserDao;
-import com.tanbt.oauth2oltu.model.Login;
-import com.tanbt.oauth2oltu.model.User;
+import com.tanbt.oauth2oltu.entity.Login;
+import com.tanbt.oauth2oltu.entity.User;
 
 @Controller
 public class LoginController {

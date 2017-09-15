@@ -10,10 +10,10 @@
     <table align="center">
         <tr>
             <td>
-                <form:label path="username">Username</form:label>
+                <form:label path="email">Username</form:label>
             </td>
             <td>
-                <form:input path="username" name="username" id="username" />
+                <form:input path="email" name="email" id="email" />
             </td>
         </tr>
         <tr>
@@ -42,26 +42,10 @@
         </tr>
         <tr>
             <td>
-                <form:label path="email">Email</form:label>
+                <form:label path="organization">Organization Id</form:label>
             </td>
             <td>
-                <form:input path="email" name="email" id="email" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <form:label path="address">Address</form:label>
-            </td>
-            <td>
-                <form:input path="address" name="address" id="address" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <form:label path="phone">Phone</form:label>
-            </td>
-            <td>
-                <form:input path="phone" name="phone" id="phone" />
+                <form:input path="organization" name="organization" id="phone" type="number" />
             </td>
         </tr>
         <tr>

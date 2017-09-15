@@ -7,15 +7,15 @@
     <title>Login</title>
 </head>
 <body>
-<%--@elvariable id="Login" type="com.tanbt.oauth2oltu.model.Login"--%>
+<%--@elvariable id="Login" type="com.tanbt.oauth2oltu.entity.Login"--%>
 <form:form id="loginForm" modelAttribute="login" action="loginProcess" method="post">
     <table align="center">
         <tr>
             <td>
-                <form:label path="username">Username: </form:label>
+                <form:label path="email">Username: </form:label>
             </td>
             <td>
-                <form:input path="username" name="username" id="username" />
+                <form:input path="email" name="email" id="email" />
             </td>
         </tr>
         <tr>

@@ -1,6 +1,6 @@
 package com.tanbt.oauth2oltu.service;
 
-import com.tanbt.oauth2oltu.model.User;
+import com.tanbt.oauth2oltu.entity.User;
 
 public class UserService {
 
