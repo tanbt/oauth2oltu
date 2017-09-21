@@ -35,6 +35,10 @@ public class User {
         this.organization = organization;
     }
 
+    public int getId() {
+        return id;
+    }
+
     public String getEmail() {
         return email;
     }
