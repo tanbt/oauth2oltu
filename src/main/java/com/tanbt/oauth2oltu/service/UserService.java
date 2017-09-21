@@ -1,17 +1,16 @@
 package com.tanbt.oauth2oltu.service;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.tanbt.oauth2oltu.entity.User;
-import com.tanbt.oauth2oltu.repository.mysql.MySQLRepository;
 
 public class UserService {
-
-    //todo: error: this is MongoDB repo
-    @Autowired
-    private MySQLRepository mySQLRepository;
 
     @Autowired
     @Qualifier("jdbcTemplate")
@@ -25,11 +24,27 @@ public class UserService {
      * @return
      */
     public User getUser(String email, String password) {
-        return mySQLRepository.findByEmailAndPassword(email, password).get(0);
+        String sql = "select * from users where email=? and password=?";
+        User employee = (User) jdbcTemplate
+                .queryForObject(sql, new Object[] { email, password },
+                        new RowMapper() {
+                            public User mapRow(ResultSet rs, int rowNum)
+                                    throws SQLException {
+                                User employee = new User();
+
+                                return employee;
+                            }
+                        });
+        return employee;
+
     }
 
 
-    public User save(User user) {
-        return mySQLRepository.save(user);
+    public void save(User user) {
+        String sql = "insert into users values(?,?,?,?,?,?)";
+
+        jdbcTemplate.update(sql,
+                new Object[] { 0, user.getEmail(), user.getPassword(),
+                        user.getFirstname(), user.getLastname(), user.getOrganization() });
     }
 }
