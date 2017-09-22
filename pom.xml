@@ -14,7 +14,7 @@
         <servlet.version>3.1.0</servlet.version>
         <servlet.version>3.0.1</servlet.version>
         <mysql.connector.version>5.1.44</mysql.connector.version>
-
+        <spring-data-jpa.version>1.11.7.RELEASE</spring-data-jpa.version>
         <log4j.version>1.7.25</log4j.version>
         <spring-data-mongodb>1.10.3.RELEASE</spring-data-mongodb>
         <mongo-data-driver>3.4.2</mongo-data-driver>
@@ -121,6 +121,12 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.connector.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>${spring-data-jpa.version}</version>
+        </dependency>
+
         <!--MongoDB-->
         <dependency>
             <groupId>org.mongodb</groupId>
