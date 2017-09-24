@@ -7,7 +7,6 @@
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context-4.0.xsd http://www.springframework.org/schema/data/mongo http://www.springframework.org/schema/data/mongo/spring-mongo.xsd">
 
-    <mongo:repositories base-package="com.tanbt.oauth2oltu.repository" />
     <context:component-scan base-package="com.tanbt.oauth2oltu"/>
     <context:annotation-config/>
 
@@ -28,11 +27,12 @@
         <property name="password" value="${mysql.password}"/>
     </bean>
 
-    <!--Mongodb config-->
-    <mongo:mongo host="${mongo.host}" port="${mongo.port}" />
-    <mongo:db-factory id="mongoDbFactory" dbname="${mongo.dbname}" />
+    <!-- Enable these lines for Mongodb connection and configuration -->
+    <!--<mongo:repositories base-package="com.tanbt.oauth2oltu.repository.mongo" />-->
+    <!--<mongo:mongo host="${mongo.host}" port="${mongo.port}" />-->
+    <!--<mongo:db-factory id="mongoDbFactory" dbname="${mongo.dbname}" />-->
 
-    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
-        <constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
-    </bean>
+    <!--<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">-->
+        <!--<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />-->
+    <!--</bean>-->
 </beans>

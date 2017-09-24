@@ -7,6 +7,10 @@ import com.tanbt.oauth2oltu.entity.User;
 
 import java.util.List;
 
+/**
+ * Need to enable MongoDb configuration in user-beans.xml
+ */
+
 @Repository
 public interface MyMongoRepository extends MongoRepository<User, String> {
 
