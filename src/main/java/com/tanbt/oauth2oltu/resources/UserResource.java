@@ -9,14 +9,14 @@ import javax.ws.rs.core.MediaType;
 public class UserResource {
 
     /**
-     * http://localhost:8080/jerseydemo/user
+     * http://localhost:8080/api/user
      *
      * @return
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String getUser() {
-        return "Hello web api";
+        return "{\"result\":\"Hello web api\"}";
     }
 
 }
