@@ -22,6 +22,12 @@ public class LoginController {
     @Qualifier("userService")
     UserService userService;
 
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public ModelAndView showHome() {
+        ModelAndView mav = new ModelAndView("index");
+        return mav;
+    }
+
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public ModelAndView showLogin(HttpServletRequest request,
             HttpServletResponse response) {

@@ -30,14 +30,6 @@ public class RegistrationController {
         return mav;
     }
 
-    /**
-     * https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.entity-persistence
-     *
-     * @param request
-     * @param response
-     * @param user
-     * @return
-     */
     @RequestMapping(value = "/registerProcess", method = RequestMethod.POST)
     public ModelAndView addUser(HttpServletRequest request,
             HttpServletResponse response, @ModelAttribute("user") User user) {
