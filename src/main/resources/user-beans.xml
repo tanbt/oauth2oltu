@@ -17,16 +17,16 @@
     <bean id="userService" class="com.tanbt.oauth2oltu.service.UserService"/>
 
     <!--Mysql config/=-->
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <property name="dataSource" ref="mysqlSource"/>
-    </bean>
+    <!--<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">-->
+        <!--<property name="dataSource" ref="mysqlSource"/>-->
+    <!--</bean>-->
 
-    <bean id="mysqlSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="${mysql.driver}"/>
-        <property name="url" value="${mysql.url}"/>
-        <property name="username" value="${mysql.user}"/>
-        <property name="password" value="${mysql.password}"/>
-    </bean>
+    <!--<bean id="mysqlSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">-->
+        <!--<property name="driverClassName" value="${mysql.driver}"/>-->
+        <!--<property name="url" value="${mysql.url}"/>-->
+        <!--<property name="username" value="${mysql.user}"/>-->
+        <!--<property name="password" value="${mysql.password}"/>-->
+    <!--</bean>-->
 
     <!--Mongodb config-->
     <mongo:mongo host="${mongo.host}" port="${mongo.port}" />
