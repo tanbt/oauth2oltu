@@ -1,7 +1,6 @@
 package com.tanbt.oauth2oltu.entity;
 
 import javax.persistence.*;
-
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -15,9 +14,7 @@ public class User {
 
     @javax.persistence.Id
     @org.springframework.data.annotation.Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
     private String email;
     private String password;
 
@@ -31,8 +28,9 @@ public class User {
     public User() {
     }
 
-    public User(String email, String password, String firstname,
+    public User(int id, String email, String password, String firstname,
             String lastname, int organization) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.firstname = firstname;

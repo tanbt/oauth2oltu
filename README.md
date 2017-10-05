@@ -6,12 +6,11 @@ A full demo of Oauth2 with Apache Oltu
 * To enable MongoDB connection: update user-beans.xml, inject MongoDB 
 repository, for example: in UserService.java 
 
-
-
-
-## References
-* https://dzone.com/articles/spring-mvc-example-for-user-registration-and-login-1
-
 ## Run
 * Make sure database engines are up and run
 * mvn clean jetty:run
+* See controllers source code for knowing accessible URI and REST (will be updated)
+
+## References:
+* https://dzone.com/articles/spring-mvc-example-for-user-registration-and-login-1
+* https://www.java2blog.com/spring-restful-web-services-json-example/
