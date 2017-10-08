@@ -14,3 +14,7 @@ repository, for example: in UserService.java
 ## References:
 * https://dzone.com/articles/spring-mvc-example-for-user-registration-and-login-1
 * https://www.java2blog.com/spring-restful-web-services-json-example/
+
+## Rest services:
+* GET http://localhost:8080/api/test
+* GET http://localhost:8080/api/users
