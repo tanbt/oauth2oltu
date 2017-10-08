@@ -29,3 +29,8 @@ POST /api/register HTTP/1.1
         { type: "pull", client_name:"test-app", client_url:"localhost:8080", client_description:"example app", redirect_url:"localhost:8080" }
      
 ```
+
+#### Login then redirect (this should be a login form)
+```
+http://localhost:8080/auth?redirect_uri=/redirect&uri=/uri&state=state&scope=read_ekycclaims&response_type=code&client_id=clientid
+```
