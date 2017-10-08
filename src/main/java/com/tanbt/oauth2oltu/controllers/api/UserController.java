@@ -18,14 +18,12 @@ public class UserController {
     @Qualifier("userService")
     UserService userService;
 
-    @RequestMapping(value = "/api/test", method = RequestMethod.GET, headers =
-            "Accept=application/json")
+    @RequestMapping(value = "/api/test", method = RequestMethod.GET, produces = "application/json")
     public String getTest() {
         return "{\"result\": \"success\"}";
     }
 
-    @RequestMapping(value = "/api/users", method = RequestMethod.GET, headers =
-            "Accept=application/json")
+    @RequestMapping(value = "/api/users", method = RequestMethod.GET, headers = "Accept=application/json")
     public List<User> getUsers() {
         return userService.findAll();
     }

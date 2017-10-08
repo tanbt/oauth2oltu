@@ -18,3 +18,14 @@ repository, for example: in UserService.java
 ## Rest services:
 * GET http://localhost:8080/api/test
 * GET http://localhost:8080/api/users
+
+## Oauth 2 apis:
+
+#### Register a client
+```
+POST /api/register HTTP/1.1
+        Host: localhost:8080
+        Content-Type: application/json
+        { type: "pull", client_name:"test-app", client_url:"localhost:8080", client_description:"example app", redirect_url:"localhost:8080" }
+     
+```
