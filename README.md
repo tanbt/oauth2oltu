@@ -15,11 +15,11 @@ repository, for example: in UserService.java
 * https://dzone.com/articles/spring-mvc-example-for-user-registration-and-login-1
 * https://www.java2blog.com/spring-restful-web-services-json-example/
 
-## Rest services:
+## Testing REST services:
 * GET http://localhost:8080/api/test
 * GET http://localhost:8080/api/users
 
-## Oauth 2 apis:
+## Oauth2 APIs:
 
 #### Register a client
 ```
@@ -30,7 +30,13 @@ POST /api/register HTTP/1.1
      
 ```
 
-#### Login then redirect (this should be a login form)
+#### Login then redirect
+These URIs act like when submitting a login form. It generate the code or the
+ access token then redirect back to the client application.
 ```
-http://localhost:8080/auth?redirect_uri=/redirect&uri=/uri&state=state&scope=read_ekycclaims&response_type=code&client_id=clientid
+http://localhost:8080/api/auth?redirect_uri=/redirect&uri=/uri&state=state&scope
+=read_ekycclaims&response_type=code&client_id=clientid
+
+http://localhost:8080/api/auth?redirect_uri=/redirect&uri=/uri&state=state&scope
+=read_ekycclaims&response_type=token&client_id=clientid
 ```
