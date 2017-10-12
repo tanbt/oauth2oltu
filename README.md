@@ -105,7 +105,7 @@ Access token is valid.
 This is probably the best method to validate the access_token.
 **access_token_valid** value in the header is the token to be validated.
 
-`GET http://localhost:8080/resource_header`
+`GET http://localhost:8080/api/resource_header`
 ADD header key: **Authorization** value: **Bearer access_token_valid**
 Will receive:
 ```
@@ -114,4 +114,4 @@ access_token_valid
 ```
 
 ##### Using the Access Token in as query parameter
-`GET http://localhost:8080/resource_query?access_token=access_token_valid`
+`GET http://localhost:8080/api/resource_query?access_token=access_token_valid`
