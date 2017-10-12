@@ -82,16 +82,23 @@ An example response:
 #### Accessing resources with Access Token
 
 ##### Response for expired Access Token
-Example (hard-code): `GET http://localhost:8080/resource_body?access_token
-=access_token_expired`
-Will receive *Error 401 Unauthorized* error.
+Example (hard-code): 
+```
+POST http://localhost:8080/api/resource_body?access_token
+=access_token_expired
+```
+Will receive 
+```
+RESPONSE 401
+Access token is expired.
+```
 
 ##### Response for valid Access Token
-`POST http://localhost:8080/resource_body?access_token=access_token_valid&fields=email,first_name,last_name`
+`POST http://localhost:8080/api/resource_body?access_token=access_token_valid&fields=email,first_name,last_name`
 Will receive:
 ```
 RESPONSE 200 OK
-access_token_valid
+Access token is valid.
 ```
 
 ##### Using the Access Token in request header
