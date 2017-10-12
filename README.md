@@ -65,7 +65,7 @@ Client app has its own Login screen. It can collect username/password.
 POST http://localhost:8080/api/token?grant_type=password&username=test_username
 &password=test_password&refresh_token=aaaa&client_id=test_id&client_secret=test_secret
 ```
-##### For revoking new access token
+##### For revoking new Access Token
 Using the refresh token
 ```
 POST http://localhost:8080/api/token?grant_type=refresh_token&refresh_token=known_refresh_token&client_id=test_id&client_secret=test_secret
@@ -78,3 +78,33 @@ An example response:
     "expires_in": 3600
 }
 ```
+
+#### Accessing resources with Access Token
+
+##### Response for expired Access Token
+Example (hard-code): `GET http://localhost:8080/resource_body?access_token
+=access_token_expired`
+Will receive *Error 401 Unauthorized* error.
+
+##### Response for valid Access Token
+`POST http://localhost:8080/resource_body?access_token=access_token_valid&fields=email,first_name,last_name`
+Will receive:
+```
+RESPONSE 200 OK
+access_token_valid
+```
+
+##### Using the Access Token in request header
+This is probably the best method to validate the access_token.
+**access_token_valid** value in the header is the token to be validated.
+
+`GET http://localhost:8080/resource_header`
+ADD header key: **Authorization** value: **Bearer access_token_valid**
+Will receive:
+```
+RESPONSE 200 OK
+access_token_valid
+```
+
+##### Using the Access Token in as query parameter
+`GET http://localhost:8080/resource_query?access_token=access_token_valid`
