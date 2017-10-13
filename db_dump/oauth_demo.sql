@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 06, 2017 at 09:56 AM
+-- Generation Time: Oct 13, 2017 at 11:12 AM
 -- Server version: 10.1.22-MariaDB
 -- PHP Version: 7.1.4
 
@@ -131,7 +131,11 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `email`, `password`, `first_name`, `last_name`, `organization`) VALUES
 (1, 'test', 'asdf', 'Tan', 'Test', 1),
-(2, 'admin@vaadin.com11', 'admin', 'tan', 'bui', 3);
+(2, 'admin@vaadin.com11', 'admin', 'tan', 'bui', 3),
+(3, 'user1', '123456', 'One', 'User', 3),
+(4, 'user2', '123456', 'Two', 'User', 6),
+(5, 'user3', '123456', 'Three', 'User', 8),
+(6, 'user4', '123456', 'Four', 'User', 10);
 
 --
 -- Indexes for dumped tables
@@ -214,7 +218,7 @@ ALTER TABLE `oauth_scopes`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 --
 -- Constraints for dumped tables
 --

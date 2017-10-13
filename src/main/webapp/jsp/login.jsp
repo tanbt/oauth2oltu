@@ -1,49 +1,25 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <title>Login</title>
-</head>
-<body>
+
+<header> <jsp:include page="header.jsp" /> </header>
 <%--@elvariable id="Login" type="com.tanbt.oauth2oltu.entity.Login"--%>
 <form:form id="loginForm" modelAttribute="login" action="loginProcess" method="post">
-    <table align="center">
-        <tr>
-            <td>
-                <form:label path="email">Username: </form:label>
-            </td>
-            <td>
-                <form:input path="email" name="email" id="email" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <form:label path="password">Password:</form:label>
-            </td>
-            <td>
-                <form:password path="password" name="password" id="password" />
-            </td>
-        </tr>
-        <tr>
-            <td></td>
-            <td align="left">
-                <form:button id="login" name="login">Login</form:button>
-            </td>
-        </tr>
-        <tr></tr>
-        <tr>
-            <td></td>
-            <td><a href="index.jsp">Home</a>
-            </td>
-        </tr>
-    </table>
+   <div class="container">
+       <div class="row">
+           <div class="col-md-4 col-md-push-4">
+               <div class="form-group">
+                   <form:label path="email">Username: </form:label>
+                   <form:input path="email" name="email" id="email"
+                               class="form-control" placeholder="Enter email"/>
+               </div>
+               <div class="form-group">
+                   <form:label path="password">Password:</form:label>
+                   <form:password path="password" name="password" id="password" class="form-control" placeholder="Password"/>
+               </div>
+               <form:button id="login" class="btn btn-primary" name="login">Login</form:button>
+           </div>
+       </div>
+   </div>
+
 </form:form>
-<table align="center">
-    <tr>
-        <td style="font-style: italic; color: red;">${message}</td>
-    </tr>
-</table>
-</body>
-</html>
+
+<footer><jsp:include page="footer.jsp" /></footer>

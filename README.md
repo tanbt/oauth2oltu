@@ -115,3 +115,6 @@ access_token_valid
 
 ##### Using the Access Token in as query parameter
 `GET http://localhost:8080/api/resource_query?access_token=access_token_valid`
+
+## A client website for testing Oauth2
+* https://github.com/tanbt/oauth2oltu-client
