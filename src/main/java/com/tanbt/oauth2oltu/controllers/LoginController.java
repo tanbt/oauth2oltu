@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.tanbt.oauth2oltu.entity.Login;
 import com.tanbt.oauth2oltu.entity.User;
@@ -50,23 +51,26 @@ public class LoginController {
         parameters = request.getParameterMap();
         ModelAndView mav = new ModelAndView("login");
         mav.addObject("login", new Login());
+        String msg = request.getParameter("msg");
+        if (msg != null) {
+            mav.addObject("message", "Wrong username or password.");
+        }
         return mav;
 
     }
 
     @RequestMapping(value = "/oauth2/loginProcess", method = RequestMethod.POST)
-    public ModelAndView loginProcess(HttpServletRequest request,
+    public RedirectView loginProcess(HttpServletRequest request,
             HttpServletResponse response,
             @ModelAttribute("login") Login login) {
         ModelAndView mav = null;
         User user = userService.getUser(login.getEmail(), login.getPassword());
         if (null != user) {
-            OauthUtils.redirect(parameters.get("redirect_uri")[0]);
+            return OauthUtils.redirect(parameters.get("redirect_uri")[0]);
         } else {
-            mav = new ModelAndView("empty");
-            mav.addObject("message", "Username or Password is wrong!!");
+            return OauthUtils.redirect(request.getHeader("referer") +
+                    "&msg=login-failed");
         }
-        return mav;
     }
 
     private boolean isValidOauthGetRequest(HttpServletRequest req) {
