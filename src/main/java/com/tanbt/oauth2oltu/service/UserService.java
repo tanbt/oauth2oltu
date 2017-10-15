@@ -19,7 +19,12 @@ public class UserService {
     private MySQLRepository repo;
 
     public User getUser(String email, String password) {
-        return repo.findByEmailAndPassword(email, password).get(0);
+        try {
+            return repo.findByEmailAndPassword(email, password).get(0);
+        } catch (Exception ex) {
+            return null;
+        }
+
     }
 
     public List<User> findAll() {

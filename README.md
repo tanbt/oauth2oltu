@@ -37,11 +37,9 @@ POST /api/register HTTP/1.1
 These URIs act like when submitting a login form. It generate the code or the
  access token then redirect back to the client application.
 ```
-http://localhost:8080/api/auth?redirect_uri=/redirect&uri=/uri&state=state&scope
-=read_ekycclaims&response_type=code&client_id=clientid
+http://localhost:8080/api/auth?redirect_uri=/redirect&scope=read_ekycclaims&response_type=code&client_id=clientid
 
-http://localhost:8080/api/auth?redirect_uri=/redirect&uri=/uri&state=state&scope
-=read_ekycclaims&response_type=token&client_id=clientid
+http://localhost:8080/api/auth?redirect_uri=/redirect&scope=read_ekycclaims&response_type=token&client_id=clientid
 ```
 
 #### Get access token with access code

@@ -14,4 +14,5 @@
 
   <div style="text-align: center">
    <h1>This is the Authentication Organization</h1>
+   <div style="color: red">${message}</div>
   </div>

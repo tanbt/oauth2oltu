@@ -1,5 +1,7 @@
 package com.tanbt.oauth2oltu.controllers;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,9 +16,15 @@ import org.springframework.web.servlet.ModelAndView;
 import com.tanbt.oauth2oltu.entity.Login;
 import com.tanbt.oauth2oltu.entity.User;
 import com.tanbt.oauth2oltu.service.UserService;
+import com.tanbt.oauth2oltu.utils.OauthUtils;
 
 @Controller
 public class LoginController {
+
+    private String[] requiredParamters = new String[]{"redirect_uri", "scope",
+            "response_type", "client_id"};
+
+    private Map<String, String[]> parameters = null;
 
     @Autowired
     @Qualifier("userService")
@@ -31,10 +39,19 @@ public class LoginController {
     @RequestMapping(value = "/oauth2/login", method = RequestMethod.GET)
     public ModelAndView showLogin(HttpServletRequest request,
             HttpServletResponse response) {
+
+        if(!isValidOauthGetRequest(request)) {
+            ModelAndView mav = new ModelAndView("empty");
+            mav.addObject("message", "This login page must be accessed from" +
+                    " a client website for Oauth2.");
+            return mav;
+        }
+
+        parameters = request.getParameterMap();
         ModelAndView mav = new ModelAndView("login");
         mav.addObject("login", new Login());
-        mav.addObject("message", "Please enter your username and password.");
         return mav;
+
     }
 
     @RequestMapping(value = "/oauth2/loginProcess", method = RequestMethod.POST)
@@ -44,12 +61,21 @@ public class LoginController {
         ModelAndView mav = null;
         User user = userService.getUser(login.getEmail(), login.getPassword());
         if (null != user) {
-            mav = new ModelAndView("welcome");
-            mav.addObject("firstname", user.getFirstname());
+            OauthUtils.redirect(parameters.get("redirect_uri")[0]);
         } else {
-            mav = new ModelAndView("login");
+            mav = new ModelAndView("empty");
             mav.addObject("message", "Username or Password is wrong!!");
         }
         return mav;
     }
+
+    private boolean isValidOauthGetRequest(HttpServletRequest req) {
+        for (String para : requiredParamters) {
+            if (req.getParameter(para) == null ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
