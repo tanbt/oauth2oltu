@@ -1,10 +1,24 @@
 package com.tanbt.oauth2oltu.controllers;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
+import org.apache.oltu.oauth2.as.issuer.MD5Generator;
+import org.apache.oltu.oauth2.as.issuer.OAuthIssuerImpl;
+import org.apache.oltu.oauth2.as.request.OAuthAuthzRequest;
+import org.apache.oltu.oauth2.as.response.OAuthASResponse;
+import org.apache.oltu.oauth2.common.OAuth;
+import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
+import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
+import org.apache.oltu.oauth2.common.message.OAuthResponse;
+import org.apache.oltu.oauth2.common.message.types.ResponseType;
+import org.apache.oltu.oauth2.common.utils.OAuthUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -19,13 +33,14 @@ import com.tanbt.oauth2oltu.entity.User;
 import com.tanbt.oauth2oltu.service.UserService;
 import com.tanbt.oauth2oltu.utils.OauthUtils;
 
+import static com.tanbt.oauth2oltu.utils.OauthUtils.redirect;
+
 @Controller
 public class LoginController {
 
-    private String[] requiredParamters = new String[]{"redirect_uri", "scope",
-            "response_type", "client_id"};
-
-    private Map<String, String[]> parameters = null;
+    private String[] requiredParamters = new String[]{ OAuth
+            .OAUTH_REDIRECT_URI, OAuth.OAUTH_SCOPE, OAuth
+            .OAUTH_RESPONSE_TYPE, OAuth.OAUTH_CLIENT_ID};
 
     @Autowired
     @Qualifier("userService")
@@ -48,9 +63,9 @@ public class LoginController {
             return mav;
         }
 
-        parameters = request.getParameterMap();
         ModelAndView mav = new ModelAndView("login");
         mav.addObject("login", new Login());
+        mav.addObject("parameters", request.getQueryString());
         String msg = request.getParameter("msg");
         if (msg != null) {
             mav.addObject("message", "Wrong username or password.");
@@ -61,12 +76,63 @@ public class LoginController {
 
     @RequestMapping(value = "/oauth2/loginProcess", method = RequestMethod.POST)
     public RedirectView loginProcess(HttpServletRequest request,
-            HttpServletResponse response,
-            @ModelAttribute("login") Login login) {
+            HttpServletResponse res,
+            @ModelAttribute("login") Login login)
+            throws OAuthSystemException, URISyntaxException {
         ModelAndView mav = null;
         User user = userService.getUser(login.getEmail(), login.getPassword());
         if (null != user) {
-            return OauthUtils.redirect(parameters.get("redirect_uri")[0]);
+
+            // todo: refactoring to separate method or library
+            OAuthAuthzRequest oauthRequest = null;
+
+            OAuthIssuerImpl oauthIssuerImpl = new OAuthIssuerImpl(
+                    new MD5Generator());
+
+            try {
+                oauthRequest = new OAuthAuthzRequest(request);
+
+                String responseType = oauthRequest
+                        .getParam(OAuth.OAUTH_RESPONSE_TYPE);
+
+                OAuthASResponse.OAuthAuthorizationResponseBuilder builder = OAuthASResponse
+                        .authorizationResponse(request,
+                                HttpServletResponse.SC_FOUND);
+
+                if (responseType.equals(ResponseType.CODE.toString())) {
+                    builder.setCode(oauthIssuerImpl.authorizationCode());
+                    builder.setExpiresIn(3600l);
+                }
+                if (responseType.equals(ResponseType.TOKEN.toString())) {
+                    builder.setAccessToken(oauthIssuerImpl.accessToken());
+                    builder.setExpiresIn(3600l);
+                }
+
+                String redirectURI = oauthRequest
+                        .getParam(OAuth.OAUTH_REDIRECT_URI);
+
+                final OAuthResponse response = builder.location(redirectURI)
+                        .buildQueryMessage();
+                URI url = new URI(response.getLocationUri());
+                return redirect(url);
+            } catch (OAuthProblemException e) {
+
+                final Response.ResponseBuilder responseBuilder = Response
+                        .status(HttpServletResponse.SC_FOUND);
+
+                String redirectUri = e.getRedirectUri();
+
+                if (OAuthUtils.isEmpty(redirectUri)) {
+                    throw new WebApplicationException(responseBuilder
+                            .entity("OAuth callback url needs to be provided by client!!!")
+                            .build());
+                }
+                final OAuthResponse response = OAuthASResponse
+                        .errorResponse(HttpServletResponse.SC_FOUND).error(e)
+                        .location(redirectUri).buildQueryMessage();
+                final URI url = new URI(response.getLocationUri());
+                return redirect(url);
+            }
         } else {
             return OauthUtils.redirect(request.getHeader("referer") +
                     "&msg=login-failed");
