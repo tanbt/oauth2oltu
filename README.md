@@ -82,8 +82,7 @@ An example response:
 ##### Response for expired Access Token
 Example (hard-code): 
 ```
-POST http://localhost:8080/api/resource_body?access_token
-=access_token_expired
+POST http://localhost:8080/api/resource_body?access_token=access_token_expired
 ```
 Will receive 
 ```

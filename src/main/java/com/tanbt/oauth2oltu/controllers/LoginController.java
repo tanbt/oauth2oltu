@@ -78,64 +78,18 @@ public class LoginController {
     public RedirectView loginProcess(HttpServletRequest request,
             HttpServletResponse res,
             @ModelAttribute("login") Login login)
-            throws OAuthSystemException, URISyntaxException {
+            throws URISyntaxException, OAuthSystemException {
         ModelAndView mav = null;
         User user = userService.getUser(login.getEmail(), login.getPassword());
         if (null != user) {
-
-            // todo: refactoring to separate method or library
-            OAuthAuthzRequest oauthRequest = null;
-
+            // TODO: attach the code/token with the user/client and save to DB
             OAuthIssuerImpl oauthIssuerImpl = new OAuthIssuerImpl(
                     new MD5Generator());
-
-            try {
-                oauthRequest = new OAuthAuthzRequest(request);
-
-                String responseType = oauthRequest
-                        .getParam(OAuth.OAUTH_RESPONSE_TYPE);
-
-                OAuthASResponse.OAuthAuthorizationResponseBuilder builder = OAuthASResponse
-                        .authorizationResponse(request,
-                                HttpServletResponse.SC_FOUND);
-
-                if (responseType.equals(ResponseType.CODE.toString())) {
-                    builder.setCode(oauthIssuerImpl.authorizationCode());
-                    builder.setExpiresIn(3600l);
-                }
-                if (responseType.equals(ResponseType.TOKEN.toString())) {
-                    builder.setAccessToken(oauthIssuerImpl.accessToken());
-                    builder.setExpiresIn(3600l);
-                }
-
-                String redirectURI = oauthRequest
-                        .getParam(OAuth.OAUTH_REDIRECT_URI);
-
-                final OAuthResponse response = builder.location(redirectURI)
-                        .buildQueryMessage();
-                URI url = new URI(response.getLocationUri());
-                return redirect(url);
-            } catch (OAuthProblemException e) {
-
-                final Response.ResponseBuilder responseBuilder = Response
-                        .status(HttpServletResponse.SC_FOUND);
-
-                String redirectUri = e.getRedirectUri();
-
-                if (OAuthUtils.isEmpty(redirectUri)) {
-                    throw new WebApplicationException(responseBuilder
-                            .entity("OAuth callback url needs to be provided by client!!!")
-                            .build());
-                }
-                final OAuthResponse response = OAuthASResponse
-                        .errorResponse(HttpServletResponse.SC_FOUND).error(e)
-                        .location(redirectUri).buildQueryMessage();
-                final URI url = new URI(response.getLocationUri());
-                return redirect(url);
-            }
+            return OauthUtils.redirect(OauthUtils.GenerateLinkAfterLogin
+                    (request, oauthIssuerImpl));
         } else {
-            return OauthUtils.redirect(request.getHeader("referer") +
-                    "&msg=login-failed");
+            return OauthUtils.redirect(
+                    request.getHeader("referer") + "&msg=login-failed");
         }
     }
 
