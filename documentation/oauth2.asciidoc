@@ -1,0 +1,25 @@
+= OAuth2 Documentation
+
+This document gives a step-by-step implementation with technical explanation on how Oauth2 works
+and how to test it with https://github.com/tanbt/oauth2oltu[oauth2oltu @ *GitHub*]
+and https://github.com/tanbt/oauth2oltu-client[oauth2oltu client website @ *GitHub*].
+
+There 4 main factors in an OAuth2 flow:
+
+* *End-user*: The one who registered an account in *Authorization Organization* to use its resource.
+E.g. a facebook account.
+* *Client*: The company which allows end-user to login their website/app via an account from *Authorization Organization*.
+* *Authorization Server*: This belongs to the authorization organization. It verifies user's login information such as password.
+* *Resource Server*: This belongs to the authorization organization. *Client* can access it with an access token to receive resources.
+
+
+== Database Schema
+See https://github.com/tanbt/oauth2oltu/blob/master/documentation/database-schema.asciidoc[Database Schema].
+
+== OAuth2 flow
+
+=== 1. Register an end-user account
+
+=== 2. Register an OAuth client account
+
+=== 3.

@@ -1,0 +1,21 @@
+= Database Schema
+
+.New Design Parameters
+image::imgs/database-schema.png[]
+
+== users
+This is all the end-users who registered to the system.
+There are some basic information which can be changed.
+Such as: *organization* is the **company id** of some EU countries.
+
+== oauth_clients
+Client must register an oauth account with the Authorization Organization, in order to allow end-users to login to client's website/app
+via an Authorization Organization account.
+
+In this schema, a client must have a user account before registering to be an oauth client.
+
+Grant types are `code` or `token`. Or leave it `null` if client wants to be able to receive one of both.
+
+== References:
+* https://github.com/dsquier/oauth2-server-php-mysql
+* https://bshaffer.github.io/oauth2-server-php-docs/cookbook/

@@ -1,24 +1,14 @@
 package com.tanbt.oauth2oltu.controllers;
 
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 
 import org.apache.oltu.oauth2.as.issuer.MD5Generator;
 import org.apache.oltu.oauth2.as.issuer.OAuthIssuerImpl;
-import org.apache.oltu.oauth2.as.request.OAuthAuthzRequest;
-import org.apache.oltu.oauth2.as.response.OAuthASResponse;
 import org.apache.oltu.oauth2.common.OAuth;
-import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
-import org.apache.oltu.oauth2.common.message.OAuthResponse;
-import org.apache.oltu.oauth2.common.message.types.ResponseType;
-import org.apache.oltu.oauth2.common.utils.OAuthUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -33,18 +23,20 @@ import com.tanbt.oauth2oltu.entity.User;
 import com.tanbt.oauth2oltu.service.UserService;
 import com.tanbt.oauth2oltu.utils.OauthUtils;
 
-import static com.tanbt.oauth2oltu.utils.OauthUtils.redirect;
-
 @Controller
 public class LoginController {
 
-    private String[] requiredParamters = new String[]{ OAuth
-            .OAUTH_REDIRECT_URI, OAuth.OAUTH_SCOPE, OAuth
-            .OAUTH_RESPONSE_TYPE, OAuth.OAUTH_CLIENT_ID};
+    /**
+     * Default expiration is a week
+     */
+    public static Long EXPIRE_DURATION = 604800l;
 
     @Autowired
     @Qualifier("userService")
     UserService userService;
+    private String[] requiredParamters = new String[] {
+            OAuth.OAUTH_REDIRECT_URI, OAuth.OAUTH_SCOPE,
+            OAuth.OAUTH_RESPONSE_TYPE, OAuth.OAUTH_CLIENT_ID };
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView showHome() {
@@ -56,7 +48,7 @@ public class LoginController {
     public ModelAndView showLogin(HttpServletRequest request,
             HttpServletResponse response) {
 
-        if(!isValidOauthGetRequest(request)) {
+        if (!isValidOauthGetRequest(request)) {
             ModelAndView mav = new ModelAndView("empty");
             mav.addObject("message", "This login page must be accessed from" +
                     " a client website for Oauth2.");
@@ -76,8 +68,7 @@ public class LoginController {
 
     @RequestMapping(value = "/oauth2/loginProcess", method = RequestMethod.POST)
     public RedirectView loginProcess(HttpServletRequest request,
-            HttpServletResponse res,
-            @ModelAttribute("login") Login login)
+            HttpServletResponse res, @ModelAttribute("login") Login login)
             throws URISyntaxException, OAuthSystemException {
         ModelAndView mav = null;
         User user = userService.getUser(login.getEmail(), login.getPassword());
@@ -85,8 +76,12 @@ public class LoginController {
             // TODO: attach the code/token with the user/client and save to DB
             OAuthIssuerImpl oauthIssuerImpl = new OAuthIssuerImpl(
                     new MD5Generator());
-            return OauthUtils.redirect(OauthUtils.GenerateLinkAfterLogin
-                    (request, oauthIssuerImpl));
+
+            String code     = oauthIssuerImpl.authorizationCode();
+            String token    = oauthIssuerImpl.accessToken();
+
+            return OauthUtils.redirect(OauthUtils
+                    .GenerateLinkAfterLogin(request, code, token, EXPIRE_DURATION));
         } else {
             return OauthUtils.redirect(
                     request.getHeader("referer") + "&msg=login-failed");
@@ -95,7 +90,7 @@ public class LoginController {
 
     private boolean isValidOauthGetRequest(HttpServletRequest req) {
         for (String para : requiredParamters) {
-            if (req.getParameter(para) == null ) {
+            if (req.getParameter(para) == null) {
                 return false;
             }
         }

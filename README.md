@@ -1,5 +1,6 @@
 # oauth2_apache_oltu
-A full demo of Oauth2 with Apache Oltu
+A full demo of Oauth2 with Apache Oltu.
+For more information, see *documentation* directory.
 
 ## Configuration
 * Mysql and MongoDB injection with Spring Bean: resources/applicationContext.xml

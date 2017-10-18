@@ -25,7 +25,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class OauthUtils {
 
     public static URI GenerateLinkAfterLogin(HttpServletRequest request,
-            OAuthIssuer issuer)
+            String code, String token, Long expire)
             throws OAuthSystemException, URISyntaxException {
 
         OAuthAuthzRequest oauthRequest = null;
@@ -40,12 +40,12 @@ public class OauthUtils {
                             HttpServletResponse.SC_FOUND);
 
             if (responseType.equals(ResponseType.CODE.toString())) {
-                builder.setCode(issuer.authorizationCode());
-                builder.setExpiresIn(3600l);
+                builder.setCode(code);
+                builder.setExpiresIn(expire);
             }
             if (responseType.equals(ResponseType.TOKEN.toString())) {
-                builder.setAccessToken(issuer.accessToken());
-                builder.setExpiresIn(3600l);
+                builder.setAccessToken(token);
+                builder.setExpiresIn(expire);
             }
 
             String redirectURI = oauthRequest
