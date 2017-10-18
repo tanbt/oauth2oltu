@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
+-- version 4.7.4
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Oct 18, 2017 at 04:14 PM
--- Server version: 10.1.22-MariaDB
--- PHP Version: 7.1.4
+-- Host: localhost
+-- Generation Time: Oct 18, 2017 at 07:29 PM
+-- Server version: 5.7.19
+-- PHP Version: 7.1.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -67,6 +67,13 @@ CREATE TABLE `oauth_clients` (
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `oauth_clients`
+--
+
+INSERT INTO `oauth_clients` (`client_id`, `client_secret`, `app_name`, `grant_types`, `client_uri`, `redirect_uri`, `user_id`) VALUES
+('testid1234', 'testid1234secret', 'testid1234 app', 'code', 'http://localhost:8081', 'http://localhost:8081/loginByOauth', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -102,17 +109,17 @@ CREATE TABLE `oauth_refresh_tokens` (
 
 CREATE TABLE `oauth_scopes` (
   `id` int(11) NOT NULL,
-  `scope` varchar(256) NOT NULL,
-  `description` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `description` varchar(255) DEFAULT NULL,
+  `scope` varchar(255) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `oauth_scopes`
 --
 
-INSERT INTO `oauth_scopes` (`id`, `scope`, `description`) VALUES
-(1, 'user:read', 'Read user information excluding password'),
-(2, 'user:write', 'Write user information (for demo purpose)');
+INSERT INTO `oauth_scopes` (`id`, `description`, `scope`) VALUES
+(1, 'Read user information excluding password', 'user:read'),
+(2, 'Write user information (for demo purpose)', 'user:write');
 
 -- --------------------------------------------------------
 
@@ -206,26 +213,25 @@ ALTER TABLE `users`
 --
 ALTER TABLE `oauth_access_tokens`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT for table `oauth_authorization_codes`
 --
 ALTER TABLE `oauth_authorization_codes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT for table `oauth_refresh_tokens`
 --
 ALTER TABLE `oauth_refresh_tokens`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
---
--- AUTO_INCREMENT for table `oauth_scopes`
---
-ALTER TABLE `oauth_scopes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
 --
 -- Constraints for dumped tables
 --

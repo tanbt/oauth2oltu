@@ -22,6 +22,7 @@ import com.tanbt.oauth2oltu.entity.Login;
 import com.tanbt.oauth2oltu.entity.OauthClient;
 import com.tanbt.oauth2oltu.entity.User;
 import com.tanbt.oauth2oltu.service.OauthClientService;
+import com.tanbt.oauth2oltu.service.OauthScopeService;
 import com.tanbt.oauth2oltu.service.UserService;
 import com.tanbt.oauth2oltu.utils.OauthUtils;
 
@@ -41,6 +42,10 @@ public class LoginController {
     @Qualifier("oauthClientService")
     OauthClientService oauthClientService;
 
+    @Autowired
+    @Qualifier("oauthScopeService")
+    OauthScopeService oauthScopeService;
+
     private String[] requiredParamters = new String[] {
             OAuth.OAUTH_REDIRECT_URI, OAuth.OAUTH_SCOPE,
             OAuth.OAUTH_RESPONSE_TYPE, OAuth.OAUTH_CLIENT_ID };
@@ -55,24 +60,27 @@ public class LoginController {
     public ModelAndView showLogin(HttpServletRequest request,
             HttpServletResponse response) {
 
+        ModelAndView mav = new ModelAndView("empty");
         if (!isValidOauthGetRequest(request)) {
-            ModelAndView mav = new ModelAndView("empty");
             mav.addObject("message", "This login page must be accessed from" +
                     " a client website for Oauth2.");
             return mav;
         }
 
         if (!isValidOauthClient(request)) {
-            ModelAndView mav = new ModelAndView("empty");
             mav.addObject("message", "Oauth Client user information is " +
                     "wrong.");
             return mav;
         }
 
         String scope    = request.getParameter(OAuth.OAUTH_SCOPE);
+        if (oauthScopeService.getOauthScope(scope) == null) {
+            mav.addObject("message", "Scope is incorrect.");
+            return mav;
+        }
 
 
-        ModelAndView mav = new ModelAndView("login");
+        mav = new ModelAndView("login");
         mav.addObject("login", new Login());
         mav.addObject("parameters", request.getQueryString());
         String msg = request.getParameter("msg");
