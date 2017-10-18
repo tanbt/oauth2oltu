@@ -5,10 +5,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.tanbt.oauth2oltu.entity.User;
+import com.tanbt.oauth2oltu.entity.OauthClient;
 
 @Repository
-public interface MySQLRepository extends JpaRepository<User, String> {
+public interface OauthClientRepository
+        extends JpaRepository<OauthClient, String> {
 
-    List<User> findByEmailAndPassword(String email, String password);
+    List<OauthClient> findById(String id);
 }

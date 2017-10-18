@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 13, 2017 at 11:12 AM
+-- Generation Time: Oct 18, 2017 at 04:14 PM
 -- Server version: 10.1.22-MariaDB
 -- PHP Version: 7.1.4
 
@@ -32,8 +32,9 @@ CREATE TABLE `oauth_access_tokens` (
   `id` int(11) NOT NULL,
   `access_token` varchar(80) NOT NULL,
   `client_id` varchar(80) NOT NULL,
-  `scope` text NOT NULL,
-  `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `scope` text,
+  `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -46,7 +47,8 @@ CREATE TABLE `oauth_authorization_codes` (
   `id` int(11) NOT NULL,
   `code` varchar(80) NOT NULL,
   `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `client_id` varchar(80) NOT NULL
+  `client_id` varchar(80) NOT NULL,
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -59,10 +61,10 @@ CREATE TABLE `oauth_clients` (
   `client_id` varchar(80) NOT NULL,
   `client_secret` varchar(80) NOT NULL,
   `app_name` varchar(256) NOT NULL,
+  `grant_types` varchar(80) DEFAULT NULL,
   `client_uri` varchar(2048) NOT NULL,
   `redirect_uri` varchar(2048) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `client_description` int(11) DEFAULT NULL
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -87,7 +89,9 @@ CREATE TABLE `oauth_refresh_tokens` (
   `id` int(11) NOT NULL,
   `refresh_token` varchar(80) NOT NULL,
   `client_id` varchar(80) NOT NULL,
-  `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+  `scope` text,
+  `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -147,14 +151,16 @@ INSERT INTO `users` (`id`, `email`, `password`, `first_name`, `last_name`, `orga
 ALTER TABLE `oauth_access_tokens`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `access_token_unique` (`access_token`),
-  ADD KEY `oauth_access_tokens_client_id` (`client_id`);
+  ADD KEY `oauth_access_tokens_client_id` (`client_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `oauth_authorization_codes`
 --
 ALTER TABLE `oauth_authorization_codes`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `oauth_authorization_codes_user_id` (`client_id`);
+  ADD UNIQUE KEY `oauth_authorization_codes_user_id` (`client_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `oauth_clients`
@@ -176,7 +182,8 @@ ALTER TABLE `oauth_jwt`
 ALTER TABLE `oauth_refresh_tokens`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `refresh_token_unique` (`refresh_token`),
-  ADD KEY `oauth_refresh_tokens_client_id` (`client_id`);
+  ADD KEY `oauth_refresh_tokens_client_id` (`client_id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `oauth_scopes`
@@ -227,13 +234,15 @@ ALTER TABLE `users`
 -- Constraints for table `oauth_access_tokens`
 --
 ALTER TABLE `oauth_access_tokens`
-  ADD CONSTRAINT `oauth_access_tokens_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `oauth_clients` (`client_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `oauth_access_tokens_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `oauth_clients` (`client_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `oauth_access_tokens_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `oauth_authorization_codes`
 --
 ALTER TABLE `oauth_authorization_codes`
-  ADD CONSTRAINT `oauth_authorization_codes_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `oauth_clients` (`client_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `oauth_authorization_codes_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `oauth_clients` (`client_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `oauth_authorization_codes_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `oauth_clients`
@@ -251,7 +260,8 @@ ALTER TABLE `oauth_jwt`
 -- Constraints for table `oauth_refresh_tokens`
 --
 ALTER TABLE `oauth_refresh_tokens`
-  ADD CONSTRAINT `oauth_refresh_tokens_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `oauth_clients` (`client_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `oauth_refresh_tokens_ibfk_1` FOREIGN KEY (`client_id`) REFERENCES `oauth_clients` (`client_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `oauth_refresh_tokens_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

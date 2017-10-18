@@ -19,7 +19,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.tanbt.oauth2oltu.entity.Login;
+import com.tanbt.oauth2oltu.entity.OauthClient;
 import com.tanbt.oauth2oltu.entity.User;
+import com.tanbt.oauth2oltu.service.OauthClientService;
 import com.tanbt.oauth2oltu.service.UserService;
 import com.tanbt.oauth2oltu.utils.OauthUtils;
 
@@ -34,6 +36,11 @@ public class LoginController {
     @Autowired
     @Qualifier("userService")
     UserService userService;
+
+    @Autowired
+    @Qualifier("oauthClientService")
+    OauthClientService oauthClientService;
+
     private String[] requiredParamters = new String[] {
             OAuth.OAUTH_REDIRECT_URI, OAuth.OAUTH_SCOPE,
             OAuth.OAUTH_RESPONSE_TYPE, OAuth.OAUTH_CLIENT_ID };
@@ -54,6 +61,16 @@ public class LoginController {
                     " a client website for Oauth2.");
             return mav;
         }
+
+        if (!isValidOauthClient(request)) {
+            ModelAndView mav = new ModelAndView("empty");
+            mav.addObject("message", "Oauth Client user information is " +
+                    "wrong.");
+            return mav;
+        }
+
+        String scope    = request.getParameter(OAuth.OAUTH_SCOPE);
+
 
         ModelAndView mav = new ModelAndView("login");
         mav.addObject("login", new Login());
@@ -77,8 +94,12 @@ public class LoginController {
             OAuthIssuerImpl oauthIssuerImpl = new OAuthIssuerImpl(
                     new MD5Generator());
 
+
+
             String code     = oauthIssuerImpl.authorizationCode();
             String token    = oauthIssuerImpl.accessToken();
+
+
 
             return OauthUtils.redirect(OauthUtils
                     .GenerateLinkAfterLogin(request, code, token, EXPIRE_DURATION));
@@ -96,5 +117,15 @@ public class LoginController {
         }
         return true;
     }
+
+    private boolean isValidOauthClient(HttpServletRequest req) {
+        String clientId = req.getParameter(OAuth.OAUTH_CLIENT_ID);
+        String redirectUrl = req.getParameter(OAuth.OAUTH_REDIRECT_URI);
+
+        OauthClient oauthClient = oauthClientService.getOauthClient(clientId);
+
+        return oauthClient != null && oauthClient.getRedirectUri().equals(redirectUrl);
+    }
+
 
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.tanbt.oauth2oltu.entity.User;
-import com.tanbt.oauth2oltu.repository.mysql.MySQLRepository;
+import com.tanbt.oauth2oltu.repository.mysql.UserRepository;
 
 /**
  * https://docs.spring.io/spring-data/jpa/docs/current/reference/html/
@@ -16,7 +16,7 @@ public class UserService {
      * https://docs.spring.io/spring-data/jpa/docs/current/reference/html/
      */
     @Autowired
-    private MySQLRepository repo;
+    private UserRepository repo;
 
     public User getUser(String email, String password) {
         try {
