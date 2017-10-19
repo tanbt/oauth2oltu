@@ -1,6 +1,10 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-
 <header> <jsp:include page="header.jsp" /> </header>
+
+<div style="text-align: center">
+    <h3>End-User Login</h3>
+</div>
+
 <%--@elvariable id="Login" type="com.tanbt.oauth2oltu.entity.Login"--%>
 <form:form id="loginForm" modelAttribute="login" action="loginProcess/?${parameters}" method="post">
    <div class="container">

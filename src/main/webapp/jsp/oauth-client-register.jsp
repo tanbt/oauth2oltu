@@ -32,7 +32,7 @@
                         <option value="token">access token</option>
                     </select>
                 </div>
-                <button id="login" class="btn btn-primary" name="login">Login</button>
+                <button id="register" class="btn btn-primary" name="login">Register</button>
             </div>
         </div>
     </div>

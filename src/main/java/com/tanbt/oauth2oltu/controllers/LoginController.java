@@ -79,7 +79,6 @@ public class LoginController {
             return mav;
         }
 
-
         mav = new ModelAndView("login");
         mav.addObject("login", new Login());
         mav.addObject("parameters", request.getQueryString());
@@ -95,7 +94,6 @@ public class LoginController {
     public RedirectView loginProcess(HttpServletRequest request,
             HttpServletResponse res, @ModelAttribute("login") Login login)
             throws URISyntaxException, OAuthSystemException {
-        ModelAndView mav = null;
         User user = userService.getUser(login.getEmail(), login.getPassword());
         if (null != user) {
             // TODO: attach the code/token with the user/client and save to DB
