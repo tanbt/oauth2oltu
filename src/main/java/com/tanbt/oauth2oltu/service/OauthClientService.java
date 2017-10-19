@@ -17,6 +17,9 @@ public class OauthClientService {
         } catch (Exception ex) {
             return null;
         }
+    }
 
+    public OauthClient save(OauthClient client) {
+        return repo.saveAndFlush(client);
     }
 }

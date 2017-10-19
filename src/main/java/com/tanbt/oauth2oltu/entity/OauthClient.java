@@ -106,4 +106,13 @@ public class OauthClient {
     public void setUserId(int userId) {
         this.userId = userId;
     }
+
+    @Override
+    public String toString() {
+        return "OauthClient{" + "id='" + id + '\'' + ", clientSecret='" +
+                clientSecret + '\'' + ", appName='" + appName + '\'' +
+                ", grantTypes='" + grantTypes + '\'' + ", clientUri='" +
+                clientUri + '\'' + ", redirectUri='" + redirectUri + '\'' +
+                ", userId=" + userId + '}';
+    }
 }
