@@ -16,6 +16,7 @@
     <bean id="userService" class="com.tanbt.oauth2oltu.service.UserService"/>
     <bean id="oauthClientService" class="com.tanbt.oauth2oltu.service.OauthClientService"/>
     <bean id="oauthScopeService" class="com.tanbt.oauth2oltu.service.OauthScopeService"/>
+    <bean id="oauthAccessTokenService" class="com.tanbt.oauth2oltu.service.OauthAccessTokenService"/>
 
     <!--Mysql config/=-->
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
