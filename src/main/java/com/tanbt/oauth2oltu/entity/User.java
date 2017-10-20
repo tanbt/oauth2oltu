@@ -14,6 +14,7 @@ public class User {
 
     @javax.persistence.Id
     @org.springframework.data.annotation.Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private int id;
     private String email;
     private String password;
