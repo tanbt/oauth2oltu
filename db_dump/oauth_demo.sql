@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.4
+-- version 4.7.0
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Oct 18, 2017 at 07:29 PM
--- Server version: 5.7.19
--- PHP Version: 7.1.7
+-- Host: 127.0.0.1
+-- Generation Time: Oct 20, 2017 at 03:00 PM
+-- Server version: 10.1.22-MariaDB
+-- PHP Version: 7.1.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -25,6 +25,25 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `hibernate_sequence`
+--
+
+CREATE TABLE `hibernate_sequence` (
+  `next_val` bigint(20) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `hibernate_sequence`
+--
+
+INSERT INTO `hibernate_sequence` (`next_val`) VALUES
+(5),
+(5),
+(5);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `oauth_access_tokens`
 --
 
@@ -37,6 +56,15 @@ CREATE TABLE `oauth_access_tokens` (
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `oauth_access_tokens`
+--
+
+INSERT INTO `oauth_access_tokens` (`id`, `access_token`, `client_id`, `scope`, `expires`, `user_id`) VALUES
+(1, '00a21317eb4f22abf69af3fd1a6a20a0', 'testid1234', 'user:read', '2017-10-27 12:16:20', 4),
+(2, '8f4033b05c361aa5565c751ffe3eee28', 'testid1234', 'user:read', '2017-10-27 12:16:41', 6),
+(3, '17fa265d640f95dcb2aac25069aa404d', 'testid1234', 'user:read', '2017-10-27 13:00:08', 5);
+
 -- --------------------------------------------------------
 
 --
@@ -47,9 +75,17 @@ CREATE TABLE `oauth_authorization_codes` (
   `id` int(11) NOT NULL,
   `code` varchar(80) NOT NULL,
   `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `scope` text,
   `client_id` varchar(80) NOT NULL,
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `oauth_authorization_codes`
+--
+
+INSERT INTO `oauth_authorization_codes` (`id`, `code`, `expires`, `scope`, `client_id`, `user_id`) VALUES
+(4, '15bdcf2517c2019a55204d3db48da435', '2017-10-27 13:00:08', 'user:read', 'testid1234', 5);
 
 -- --------------------------------------------------------
 
@@ -212,26 +248,32 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `oauth_access_tokens`
 --
 ALTER TABLE `oauth_access_tokens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `oauth_authorization_codes`
 --
 ALTER TABLE `oauth_authorization_codes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+--
+-- AUTO_INCREMENT for table `oauth_jwt`
+--
+ALTER TABLE `oauth_jwt`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
 --
 -- AUTO_INCREMENT for table `oauth_refresh_tokens`
 --
 ALTER TABLE `oauth_refresh_tokens`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
+--
+-- AUTO_INCREMENT for table `oauth_scopes`
+--
+ALTER TABLE `oauth_scopes`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
 --
 -- Constraints for dumped tables
 --

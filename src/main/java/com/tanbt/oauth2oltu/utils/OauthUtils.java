@@ -2,16 +2,12 @@ package com.tanbt.oauth2oltu.utils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.apache.oltu.oauth2.as.issuer.MD5Generator;
-import org.apache.oltu.oauth2.as.issuer.OAuthIssuer;
-import org.apache.oltu.oauth2.as.issuer.OAuthIssuerImpl;
 import org.apache.oltu.oauth2.as.request.OAuthAuthzRequest;
 import org.apache.oltu.oauth2.as.response.OAuthASResponse;
 import org.apache.oltu.oauth2.common.OAuth;
@@ -22,10 +18,12 @@ import org.apache.oltu.oauth2.common.message.types.ResponseType;
 import org.apache.oltu.oauth2.common.utils.OAuthUtils;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.tanbt.oauth2oltu.controllers.LoginController;
+
 public class OauthUtils {
 
     public static URI GenerateLinkAfterLogin(HttpServletRequest request,
-            String code, String token, Long expire)
+            String code, String token)
             throws OAuthSystemException, URISyntaxException {
 
         OAuthAuthzRequest oauthRequest = null;
@@ -41,11 +39,11 @@ public class OauthUtils {
 
             if (responseType.equals(ResponseType.CODE.toString())) {
                 builder.setCode(code);
-                builder.setExpiresIn(expire);
+                builder.setExpiresIn(LoginController.TOKEN_EXPIRE_DURATION);
             }
             if (responseType.equals(ResponseType.TOKEN.toString())) {
                 builder.setAccessToken(token);
-                builder.setExpiresIn(expire);
+                builder.setExpiresIn(LoginController.TOKEN_EXPIRE_DURATION);
             }
 
             String redirectURI = oauthRequest

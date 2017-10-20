@@ -21,10 +21,13 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.tanbt.oauth2oltu.entity.Login;
 import com.tanbt.oauth2oltu.entity.OauthAccessToken;
+import com.tanbt.oauth2oltu.entity.OauthAuthorizationCode;
 import com.tanbt.oauth2oltu.entity.OauthClient;
 import com.tanbt.oauth2oltu.entity.User;
 import com.tanbt.oauth2oltu.service.OauthAccessTokenService;
+import com.tanbt.oauth2oltu.service.OauthAuthorizationCodeService;
 import com.tanbt.oauth2oltu.service.OauthClientService;
+import com.tanbt.oauth2oltu.service.OauthRefreshTokenService;
 import com.tanbt.oauth2oltu.service.OauthScopeService;
 import com.tanbt.oauth2oltu.service.UserService;
 import com.tanbt.oauth2oltu.utils.OauthUtils;
@@ -33,9 +36,10 @@ import com.tanbt.oauth2oltu.utils.OauthUtils;
 public class LoginController {
 
     /**
-     * Default expiration is the seconds of a week
+     * Default expiration of the code is the seconds of a week
      */
-    public static Long EXPIRE_DURATION = 604800l;
+    public static Long TOKEN_EXPIRE_DURATION = 604800l;
+    public static Long REFRESH_EXPIRE_DURATION = TOKEN_EXPIRE_DURATION * 2;
 
     @Autowired
     @Qualifier("userService")
@@ -52,6 +56,15 @@ public class LoginController {
     @Autowired
     @Qualifier("oauthAccessTokenService")
     OauthAccessTokenService oauthAccessTokenService;
+
+    @Autowired
+    @Qualifier("oauthAuthorizationCodeService")
+    OauthAuthorizationCodeService oauthAuthorizationCodeService;
+
+    @Autowired
+    @Qualifier("oauthRefreshTokenService")
+    OauthRefreshTokenService oauthRefreshTokenService;
+
 
     private String[] requiredParamters = new String[] {
             OAuth.OAUTH_REDIRECT_URI, OAuth.OAUTH_SCOPE,
@@ -105,24 +118,33 @@ public class LoginController {
             HttpServletResponse res, @ModelAttribute("login") Login login)
             throws URISyntaxException, OAuthSystemException {
         User user = userService.getUser(login.getEmail(), login.getPassword());
+
         if (null != user) {
-            // TODO: attach the code/token with the user/client and save to DB
             OAuthIssuerImpl oauthIssuerImpl = new OAuthIssuerImpl(
                     new MD5Generator());
 
             String clientId = request.getParameter(OAuth.OAUTH_CLIENT_ID);
             String scope    = request.getParameter(OAuth.OAUTH_SCOPE);
-            String code     = oauthIssuerImpl.authorizationCode();
-            Date today = new Date();
-            Date expires = new Date(today.getTime() + EXPIRE_DURATION * 1000);
+            String responseType = request.getParameter(OAuth
+                    .OAUTH_RESPONSE_TYPE);
 
             String token    = oauthIssuerImpl.accessToken();
-            OauthAccessToken oauthAccessToken = new OauthAccessToken(
-                    token, clientId, scope, expires, user.getId());
-            oauthAccessTokenService.save(oauthAccessToken);
+            String code     = oauthIssuerImpl.authorizationCode();
+
+            if (responseType.equals("code")) {
+                OauthAuthorizationCode oauthAuthorizationCode = new
+                        OauthAuthorizationCode(code, getExpireDate
+                        (TOKEN_EXPIRE_DURATION), scope, clientId, user.getId());
+                oauthAuthorizationCodeService.save(oauthAuthorizationCode);
+            } else {
+                OauthAccessToken oauthAccessToken = new OauthAccessToken(token,
+                        clientId, scope, getExpireDate(TOKEN_EXPIRE_DURATION),
+                        user.getId());
+                oauthAccessTokenService.save(oauthAccessToken);
+            }
 
             return OauthUtils.redirect(OauthUtils
-                    .GenerateLinkAfterLogin(request, code, token, EXPIRE_DURATION));
+                    .GenerateLinkAfterLogin(request, code, token));
         } else {
             return OauthUtils.redirect(
                     request.getHeader("referer") + "&msg=login-failed");
@@ -147,5 +169,9 @@ public class LoginController {
         return oauthClient != null && oauthClient.getRedirectUri().equals(redirectUrl);
     }
 
+    private Date getExpireDate(Long duration) {
+        Date today = new Date();
+        return new Date(today.getTime() + duration * 1000);
+    }
 
 }
