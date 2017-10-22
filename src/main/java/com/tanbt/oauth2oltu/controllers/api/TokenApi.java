@@ -24,15 +24,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tanbt.oauth2oltu.controllers.api.demo.TestContent;
+import com.tanbt.oauth2oltu.entity.OauthAccessToken;
 import com.tanbt.oauth2oltu.entity.OauthAuthorizationCode;
 import com.tanbt.oauth2oltu.entity.OauthClient;
 import com.tanbt.oauth2oltu.entity.OauthRefreshToken;
 import com.tanbt.oauth2oltu.entity.User;
+import com.tanbt.oauth2oltu.service.OauthAccessTokenService;
 import com.tanbt.oauth2oltu.service.OauthAuthorizationCodeService;
 import com.tanbt.oauth2oltu.service.OauthClientService;
 import com.tanbt.oauth2oltu.service.OauthRefreshTokenService;
 import com.tanbt.oauth2oltu.service.UserService;
+import com.tanbt.oauth2oltu.utils.OauthUtils;
 
 @RestController
 public class TokenApi {
@@ -58,6 +60,10 @@ public class TokenApi {
     @Autowired
     @Qualifier("oauthRefreshTokenService")
     OauthRefreshTokenService oauthRefreshTokenService;
+
+    @Autowired
+    @Qualifier("oauthAccessTokenService")
+    OauthAccessTokenService oauthAccessTokenService;
 
     @RequestMapping(value = "/oauth/token", method = RequestMethod.POST, produces = "application/json")
     public ResponseEntity<Object> authorize(@Context HttpServletRequest request)
@@ -113,7 +119,6 @@ public class TokenApi {
             } else if (grantType.equals(GrantType.PASSWORD.toString())) {
                 User endUser = userService.getUser(oauthRequest.getUsername(),
                         oauthRequest.getPassword());
-
                 if (endUser == null) {
                     return new ResponseEntity<Object>(generateErrorReponse(
                             OAuthError.TokenResponse.INVALID_GRANT,
@@ -133,7 +138,18 @@ public class TokenApi {
 
             String accessToken = oauthIssuerImpl.accessToken();
             String refreshToken = oauthIssuerImpl.refreshToken();
-            //todo: insert to db
+
+            OauthAccessToken oauthAccessToken = new OauthAccessToken(
+                    accessToken, clientId, oauthCodeObj.getScope(),
+                    OauthUtils.getExpireDate(TOKEN_EXPIRE_DURATION),
+                    oauthCodeObj.getUserId());
+            oauthAccessTokenService.save(oauthAccessToken);
+
+            OauthRefreshToken oauthRefreshToken = new OauthRefreshToken
+                    (refreshToken, clientId, oauthCodeObj.getScope(),
+                            OauthUtils.getExpireDate(REFRESH_EXPIRE_DURATION),
+                            oauthCodeObj.getUserId());
+            oauthRefreshTokenService.save(oauthRefreshToken);
 
             OAuthResponse response = OAuthASResponse
                     .tokenResponse(HttpServletResponse.SC_OK)

@@ -84,12 +84,12 @@ public class LoginController {
         }
 
         if (!isValidOauthClient(request)) {
-            mav.addObject("message", "Oauth Client user information is " +
-                    "wrong.");
+            mav.addObject("message",
+                    "Oauth Client user information is " + "wrong.");
             return mav;
         }
 
-        String scope    = request.getParameter(OAuth.OAUTH_SCOPE);
+        String scope = request.getParameter(OAuth.OAUTH_SCOPE);
         if (oauthScopeService.getOauthScope(scope) == null) {
             mav.addObject("message", "Scope is incorrect.");
             return mav;
@@ -120,27 +120,28 @@ public class LoginController {
                     new MD5Generator());
 
             String clientId = request.getParameter(OAuth.OAUTH_CLIENT_ID);
-            String scope    = request.getParameter(OAuth.OAUTH_SCOPE);
-            String responseType = request.getParameter(OAuth
-                    .OAUTH_RESPONSE_TYPE);
+            String scope = request.getParameter(OAuth.OAUTH_SCOPE);
+            String responseType = request
+                    .getParameter(OAuth.OAUTH_RESPONSE_TYPE);
 
-            String token    = oauthIssuerImpl.accessToken();
-            String code     = oauthIssuerImpl.authorizationCode();
+            String token = oauthIssuerImpl.accessToken();
+            String code = oauthIssuerImpl.authorizationCode();
 
             if (responseType.equals("code")) {
-                OauthAuthorizationCode oauthAuthorizationCode = new
-                        OauthAuthorizationCode(code, getExpireDate
-                        (TOKEN_EXPIRE_DURATION), scope, clientId, user.getId());
+                OauthAuthorizationCode oauthAuthorizationCode = new OauthAuthorizationCode(
+                        code, OauthUtils.getExpireDate(TOKEN_EXPIRE_DURATION),
+                        scope, clientId, user.getId());
                 oauthAuthorizationCodeService.save(oauthAuthorizationCode);
             } else {
                 OauthAccessToken oauthAccessToken = new OauthAccessToken(token,
-                        clientId, scope, getExpireDate(TOKEN_EXPIRE_DURATION),
+                        clientId, scope,
+                        OauthUtils.getExpireDate(TOKEN_EXPIRE_DURATION),
                         user.getId());
                 oauthAccessTokenService.save(oauthAccessToken);
             }
 
-            return OauthUtils.redirect(OauthUtils
-                    .GenerateLinkAfterLogin(request, code, token));
+            return OauthUtils.redirect(
+                    OauthUtils.GenerateLinkAfterLogin(request, code, token));
         } else {
             return OauthUtils.redirect(
                     request.getHeader("referer") + "&msg=login-failed");
@@ -162,12 +163,8 @@ public class LoginController {
 
         OauthClient oauthClient = oauthClientService.getOauthClient(clientId);
 
-        return oauthClient != null && oauthClient.getRedirectUri().equals(redirectUrl);
-    }
-
-    private Date getExpireDate(Long duration) {
-        Date today = new Date();
-        return new Date(today.getTime() + duration * 1000);
+        return oauthClient != null &&
+                oauthClient.getRedirectUri().equals(redirectUrl);
     }
 
 }

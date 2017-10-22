@@ -2,6 +2,7 @@ package com.tanbt.oauth2oltu.utils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -82,5 +83,10 @@ public class OauthUtils {
         RedirectView redirectView = new RedirectView();
         redirectView.setUrl(url);
         return redirectView;
+    }
+
+    public static Date getExpireDate(Long duration) {
+        Date today = new Date();
+        return new Date(today.getTime() + duration * 1000);
     }
 }

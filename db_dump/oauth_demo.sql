@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 22, 2017 at 08:24 AM
+-- Generation Time: Oct 22, 2017 at 06:56 PM
 -- Server version: 5.7.19
 -- PHP Version: 7.1.7
 
@@ -37,9 +37,9 @@ CREATE TABLE `hibernate_sequence` (
 --
 
 INSERT INTO `hibernate_sequence` (`next_val`) VALUES
-(11),
-(11),
-(11);
+(13),
+(13),
+(13);
 
 -- --------------------------------------------------------
 
@@ -66,7 +66,8 @@ INSERT INTO `oauth_access_tokens` (`id`, `access_token`, `client_id`, `scope`, `
 (3, '17fa265d640f95dcb2aac25069aa404d', 'testid1234', 'user:read', '2017-10-27 13:00:08', 5),
 (5, 'f144b07cce45185be43b9f953665813a', 'testid1234', 'user:read', '2017-10-29 07:32:11', 6),
 (7, 'b7a795adaf7dff2117cef55e34af87ec', 'testid1234', 'user:read', '2017-10-29 07:34:45', 6),
-(10, '0b9303c11fa0cce3fd79ca9628a9c459', 'testid1234', 'user:read', '2017-10-29 07:38:05', 3);
+(10, '0b9303c11fa0cce3fd79ca9628a9c459', 'testid1234', 'user:read', '2017-10-29 07:38:05', 3),
+(11, '45c38e6cce05484687894c4d6f400675', 'testid1234', 'user:read', '2017-10-29 18:02:32', 3);
 
 -- --------------------------------------------------------
 
@@ -142,6 +143,13 @@ CREATE TABLE `oauth_refresh_tokens` (
   `expires` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `oauth_refresh_tokens`
+--
+
+INSERT INTO `oauth_refresh_tokens` (`id`, `refresh_token`, `client_id`, `scope`, `expires`, `user_id`) VALUES
+(12, '2b34cc46f314b8ef438f3504d11b8e8a', 'testid1234', 'user:read', '2017-11-05 18:02:32', 3);
 
 -- --------------------------------------------------------
 
@@ -254,7 +262,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `oauth_access_tokens`
 --
 ALTER TABLE `oauth_access_tokens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `oauth_authorization_codes`
@@ -272,7 +280,7 @@ ALTER TABLE `oauth_jwt`
 -- AUTO_INCREMENT for table `oauth_refresh_tokens`
 --
 ALTER TABLE `oauth_refresh_tokens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `oauth_scopes`
