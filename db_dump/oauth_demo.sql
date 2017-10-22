@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
+-- version 4.7.4
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Oct 20, 2017 at 03:00 PM
--- Server version: 10.1.22-MariaDB
--- PHP Version: 7.1.4
+-- Host: localhost
+-- Generation Time: Oct 22, 2017 at 08:24 AM
+-- Server version: 5.7.19
+-- PHP Version: 7.1.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -37,9 +37,9 @@ CREATE TABLE `hibernate_sequence` (
 --
 
 INSERT INTO `hibernate_sequence` (`next_val`) VALUES
-(5),
-(5),
-(5);
+(11),
+(11),
+(11);
 
 -- --------------------------------------------------------
 
@@ -63,7 +63,10 @@ CREATE TABLE `oauth_access_tokens` (
 INSERT INTO `oauth_access_tokens` (`id`, `access_token`, `client_id`, `scope`, `expires`, `user_id`) VALUES
 (1, '00a21317eb4f22abf69af3fd1a6a20a0', 'testid1234', 'user:read', '2017-10-27 12:16:20', 4),
 (2, '8f4033b05c361aa5565c751ffe3eee28', 'testid1234', 'user:read', '2017-10-27 12:16:41', 6),
-(3, '17fa265d640f95dcb2aac25069aa404d', 'testid1234', 'user:read', '2017-10-27 13:00:08', 5);
+(3, '17fa265d640f95dcb2aac25069aa404d', 'testid1234', 'user:read', '2017-10-27 13:00:08', 5),
+(5, 'f144b07cce45185be43b9f953665813a', 'testid1234', 'user:read', '2017-10-29 07:32:11', 6),
+(7, 'b7a795adaf7dff2117cef55e34af87ec', 'testid1234', 'user:read', '2017-10-29 07:34:45', 6),
+(10, '0b9303c11fa0cce3fd79ca9628a9c459', 'testid1234', 'user:read', '2017-10-29 07:38:05', 3);
 
 -- --------------------------------------------------------
 
@@ -85,7 +88,9 @@ CREATE TABLE `oauth_authorization_codes` (
 --
 
 INSERT INTO `oauth_authorization_codes` (`id`, `code`, `expires`, `scope`, `client_id`, `user_id`) VALUES
-(4, '15bdcf2517c2019a55204d3db48da435', '2017-10-27 13:00:08', 'user:read', 'testid1234', 5);
+(4, '15bdcf2517c2019a55204d3db48da435', '2017-10-27 13:00:08', 'user:read', 'testid1234', 5),
+(8, 'fcb2369c69a50f969846a90a01427c07', '2017-10-29 07:37:06', 'user:read', 'testid1234', 6),
+(9, 'c16ec77acf868362e084a3679be3e941', '2017-10-29 07:37:45', 'user:read', 'testid1234', 3);
 
 -- --------------------------------------------------------
 
@@ -97,7 +102,7 @@ CREATE TABLE `oauth_clients` (
   `client_id` varchar(80) NOT NULL,
   `client_secret` varchar(80) NOT NULL,
   `app_name` varchar(256) NOT NULL,
-  `grant_types` varchar(80) DEFAULT NULL,
+  `grant_types` varchar(80) NOT NULL,
   `client_uri` varchar(2048) NOT NULL,
   `redirect_uri` varchar(2048) NOT NULL,
   `user_id` int(11) NOT NULL
@@ -108,7 +113,8 @@ CREATE TABLE `oauth_clients` (
 --
 
 INSERT INTO `oauth_clients` (`client_id`, `client_secret`, `app_name`, `grant_types`, `client_uri`, `redirect_uri`, `user_id`) VALUES
-('testid1234', 'testid1234secret', 'testid1234 app', 'code', 'http://localhost:8081', 'http://localhost:8081/loginByOauth', 1);
+('testid1234', 'testid1234secret', 'testid1234 app', 'authorization_code', 'http://localhost:8081', 'http://localhost:8081/loginByOauth', 1),
+('user2_id', 'user2_secret', 'user app two', 'authorization_code', 'http://localhost:8081', 'http://localhost:8081/loginByOauth', 4);
 
 -- --------------------------------------------------------
 
@@ -202,8 +208,8 @@ ALTER TABLE `oauth_access_tokens`
 --
 ALTER TABLE `oauth_authorization_codes`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `oauth_authorization_codes_user_id` (`client_id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `oauth_authorization_codes_user_id` (`client_id`) USING BTREE;
 
 --
 -- Indexes for table `oauth_clients`
@@ -248,32 +254,38 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `oauth_access_tokens`
 --
 ALTER TABLE `oauth_access_tokens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
 --
 -- AUTO_INCREMENT for table `oauth_authorization_codes`
 --
 ALTER TABLE `oauth_authorization_codes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
 --
 -- AUTO_INCREMENT for table `oauth_jwt`
 --
 ALTER TABLE `oauth_jwt`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT for table `oauth_refresh_tokens`
 --
 ALTER TABLE `oauth_refresh_tokens`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT for table `oauth_scopes`
 --
 ALTER TABLE `oauth_scopes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
 --
 -- Constraints for dumped tables
 --

@@ -25,11 +25,13 @@
                     <input name="redirect_uri" id="redirect-uri" class="form-control" value="http://localhost:8081/loginByOauth" required/>
                 </div>
                 <div class="form-group">
-                    <label for="grant-types">Grant types:</label>
+                    <label for="grant-types">Grant types: <span title="rg.apache.oltu.oauth2.common.message.types.GrantType">(?)</span>/label>
                     <select name="grant_types" id="grant-types" class="form-control">
-                        <option value="" selected>All</option>
-                        <option value="code">access code</option>
-                        <option value="token">access token</option>
+                        <option value="authorization_code" selected>Authorization code</option>
+                        <option value="implicit">Implicit</option>
+                        <option value="password">Password</option>
+                        <option value="refresh_token">Refresh token</option>
+                        <option value="client_credentials">Client credential</option>
                     </select>
                 </div>
                 <button id="register" class="btn btn-primary" name="login">Register</button>
