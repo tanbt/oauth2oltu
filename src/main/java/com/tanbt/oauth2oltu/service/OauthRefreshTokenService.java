@@ -14,4 +14,12 @@ public class OauthRefreshTokenService {
     public OauthRefreshToken save(OauthRefreshToken token) {
         return repo.saveAndFlush(token);
     }
+
+    public OauthRefreshToken findByCode(String code) {
+        try {
+            return repo.findByRefreshToken(code).get(0);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 }

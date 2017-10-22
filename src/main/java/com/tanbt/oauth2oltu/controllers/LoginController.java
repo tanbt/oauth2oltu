@@ -32,14 +32,10 @@ import com.tanbt.oauth2oltu.service.OauthScopeService;
 import com.tanbt.oauth2oltu.service.UserService;
 import com.tanbt.oauth2oltu.utils.OauthUtils;
 
+import static com.tanbt.oauth2oltu.controllers.api.TokenApi.TOKEN_EXPIRE_DURATION;
+
 @Controller
 public class LoginController {
-
-    /**
-     * Default expiration of the code is the seconds of a week
-     */
-    public static Long TOKEN_EXPIRE_DURATION = 604800l;
-    public static Long REFRESH_EXPIRE_DURATION = TOKEN_EXPIRE_DURATION * 2;
 
     @Autowired
     @Qualifier("userService")

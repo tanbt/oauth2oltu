@@ -25,18 +25,42 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tanbt.oauth2oltu.controllers.api.demo.TestContent;
+import com.tanbt.oauth2oltu.entity.OauthAuthorizationCode;
+import com.tanbt.oauth2oltu.entity.OauthClient;
+import com.tanbt.oauth2oltu.entity.OauthRefreshToken;
+import com.tanbt.oauth2oltu.entity.User;
+import com.tanbt.oauth2oltu.service.OauthAuthorizationCodeService;
+import com.tanbt.oauth2oltu.service.OauthClientService;
+import com.tanbt.oauth2oltu.service.OauthRefreshTokenService;
 import com.tanbt.oauth2oltu.service.UserService;
 
 @RestController
 public class TokenApi {
 
+    /**
+     * Default expiration of the code is the seconds of a week
+     */
+    public static Long TOKEN_EXPIRE_DURATION = 604800l;
+    public static Long REFRESH_EXPIRE_DURATION = TOKEN_EXPIRE_DURATION * 2;
+
+    @Autowired
+    @Qualifier("oauthAuthorizationCodeService")
+    OauthAuthorizationCodeService oauthAuthorizationCodeService;
+
+    @Autowired
+    @Qualifier("oauthClientService")
+    OauthClientService oauthClientService;
+
     @Autowired
     @Qualifier("userService")
     UserService userService;
 
-    @RequestMapping(value = "/oauth/token", method = RequestMethod.POST,
-            produces = "application/json")
-    public ResponseEntity authorize(@Context HttpServletRequest request)
+    @Autowired
+    @Qualifier("oauthRefreshTokenService")
+    OauthRefreshTokenService oauthRefreshTokenService;
+
+    @RequestMapping(value = "/oauth/token", method = RequestMethod.POST, produces = "application/json")
+    public ResponseEntity<Object> authorize(@Context HttpServletRequest request)
             throws OAuthSystemException {
 
         OAuthIssuer oauthIssuerImpl = new OAuthIssuerImpl(new MD5Generator());
@@ -44,106 +68,96 @@ public class TokenApi {
         String oauthCode = request.getParameter("code");
         String clientId = request.getParameter(OAuth.OAUTH_CLIENT_ID);
         String clientSecret = request.getParameter(OAuth.OAUTH_CLIENT_SECRET);
-        String redirectUri = request.getParameter("redirect_uri");
-        String grantType = request.getParameter(OAuth.OAUTH_GRANT_TYPE);
+        String redirectUri = request.getParameter(OAuth.OAUTH_REDIRECT_URI);
 
-        OAuthTokenRequest oauthRequest = null;
-
+        OAuthTokenRequest oauthRequest;
 
         try {
             oauthRequest = new OAuthTokenRequest(request);
+            OauthClient oauthClient = oauthClientService
+                    .getOauthClient(clientId);
 
-            //check if client secret is valid
-            if (!TestContent.CLIENT_SECRET
-                    .equals(oauthRequest.getParam(OAuth.OAUTH_CLIENT_SECRET))) {
-                OAuthResponse response = OAuthASResponse
-                        .errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                        .setError(OAuthError.TokenResponse.INVALID_CLIENT)
-                        .setErrorDescription("client_secret invalid")
-                        .buildJSONMessage();
-                return new ResponseEntity(response.getBody(), HttpStatus.OK);
+            if (oauthClient == null) {
+                return new ResponseEntity<Object>(generateErrorReponse(
+                        OAuthError.TokenResponse.INVALID_CLIENT,
+                        "Invalid client id").getBody(), HttpStatus.UNAUTHORIZED);
             }
 
-            //check if clientid is valid
-            if (!TestContent.CLIENT_ID
-                    .equals(oauthRequest.getParam(OAuth.OAUTH_CLIENT_ID))) {
-                OAuthResponse response = OAuthASResponse
-                        .errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                        .setError(OAuthError.TokenResponse.INVALID_CLIENT)
-                        .setErrorDescription("client_id not found")
-                        .buildJSONMessage();
-                return new ResponseEntity(response.getBody(),
-                        HttpStatus.UNAUTHORIZED);
+            if (!oauthClient.getClientSecret().equals(clientSecret)) {
+                return new ResponseEntity<Object>(generateErrorReponse(
+                        OAuthError.TokenResponse.INVALID_CLIENT,
+                        "Invalid client secret").getBody(), HttpStatus
+                        .UNAUTHORIZED);
             }
 
-            //do checking for different grant types
-            if (oauthRequest.getParam(OAuth.OAUTH_GRANT_TYPE)
-                    .equals(GrantType.AUTHORIZATION_CODE.toString())) {
-                if (!TestContent.AUTHORIZATION_CODE
-                        .equals(oauthRequest.getParam(OAuth.OAUTH_CODE))) {
-                    OAuthResponse response = OAuthASResponse
-                            .errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                            .setError(OAuthError.TokenResponse.INVALID_GRANT)
-                            .setErrorDescription("invalid authorization code")
-                            .buildJSONMessage();
-                    return new ResponseEntity(response.getBody(),
+            if (!oauthClient.getRedirectUri().equals(redirectUri)) {
+                return new ResponseEntity<Object>(generateErrorReponse(
+                        OAuthError.TokenResponse.INVALID_CLIENT,
+                        "Invalid redirect url").getBody(), HttpStatus
+                        .UNAUTHORIZED);
+            }
+
+            // process based on grant type
+            String grantType = request.getParameter(OAuth.OAUTH_GRANT_TYPE);
+            OauthAuthorizationCode oauthCodeObj = oauthAuthorizationCodeService
+                    .findByCode(oauthCode);
+
+            if (grantType.equals(GrantType.AUTHORIZATION_CODE.toString())) {
+                if (oauthCodeObj == null) {
+                    //todo: check expired code - easy
+                    return new ResponseEntity<Object>(generateErrorReponse(
+                            OAuthError.TokenResponse.INVALID_CLIENT,
+                            "Invalid Authorization code ").getBody(),
                             HttpStatus.UNAUTHORIZED);
                 }
-            } else if (oauthRequest.getParam(OAuth.OAUTH_GRANT_TYPE)
-                    .equals(GrantType.PASSWORD.toString())) {
-                if (!TestContent.PASSWORD.equals(oauthRequest.getPassword()) ||
-                        !TestContent.USERNAME
-                                .equals(oauthRequest.getUsername())) {
-                    OAuthResponse response = OAuthASResponse
-                            .errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                            .setError(OAuthError.TokenResponse.INVALID_GRANT)
-                            .setErrorDescription("invalid username or password")
-                            .buildJSONMessage();
-                    return new ResponseEntity(response.getBody(),
-                            HttpStatus.UNAUTHORIZED);
+            } else if (grantType.equals(GrantType.PASSWORD.toString())) {
+                User endUser = userService.getUser(oauthRequest.getUsername(),
+                        oauthRequest.getPassword());
+
+                if (endUser == null) {
+                    return new ResponseEntity<Object>(generateErrorReponse(
+                            OAuthError.TokenResponse.INVALID_GRANT,
+                            "Invalid user ").getBody(), HttpStatus.UNAUTHORIZED);
                 }
-            } else if (oauthRequest.getParam(OAuth.OAUTH_GRANT_TYPE)
-                    .equals(GrantType.REFRESH_TOKEN.toString())) {
-                if (!TestContent.REFRESH_TOKEN
-                        .equals(oauthRequest.getRefreshToken())) {
-                    OAuthResponse response = OAuthASResponse
-                            .errorResponse(HttpServletResponse.SC_BAD_REQUEST)
-                            .setError(OAuthError.TokenResponse.INVALID_GRANT)
-                            .setErrorDescription("invalid refresh token")
-                            .buildJSONMessage();
-                    return new ResponseEntity(response.getBody(),
-                            HttpStatus.UNAUTHORIZED);
+            } else if (grantType.equals(GrantType.REFRESH_TOKEN.toString())) {
+                OauthRefreshToken refreshToken = oauthRefreshTokenService
+                        .findByCode(oauthRequest.getRefreshToken());
+
+                if (refreshToken == null) {
+                    return new ResponseEntity<Object>(generateErrorReponse(
+                            OAuthError.TokenResponse.INVALID_GRANT,
+                            "Invalid refresh token ").getBody(), HttpStatus
+                            .UNAUTHORIZED);
                 }
             }
+
+            String accessToken = oauthIssuerImpl.accessToken();
+            String refreshToken = oauthIssuerImpl.refreshToken();
+            //todo: insert to db
 
             OAuthResponse response = OAuthASResponse
                     .tokenResponse(HttpServletResponse.SC_OK)
-                    .setAccessToken(oauthIssuerImpl.accessToken())
-                    .setExpiresIn("3600")
-                    .setRefreshToken(oauthIssuerImpl.refreshToken())
+                    .setAccessToken(accessToken)
+                    .setExpiresIn(String.format("%s", TOKEN_EXPIRE_DURATION))
+                    .setRefreshToken(refreshToken)
                     .buildJSONMessage();
 
-            return new ResponseEntity(response.getBody(), HttpStatus.OK);
+            return new ResponseEntity<Object>(response.getBody(),
+                    HttpStatus.OK);
         } catch (OAuthProblemException e) {
             OAuthResponse res = OAuthASResponse
                     .errorResponse(HttpServletResponse.SC_BAD_REQUEST).error(e)
                     .buildJSONMessage();
-            return new ResponseEntity(res.getBody(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<Object>(res.getBody(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 
-    @RequestMapping(value = "/oauth/token", method = RequestMethod.GET,
-            consumes = "application/x-www-form-urlencoded", produces = "application/json")
-    public ResponseEntity authorizeGet(@Context HttpServletRequest request)
+    private OAuthResponse generateErrorReponse(String responseCode, String desc)
             throws OAuthSystemException {
-        OAuthIssuer oauthIssuerImpl = new OAuthIssuerImpl(new MD5Generator());
-
-        OAuthResponse response = OAuthASResponse
-                .tokenResponse(HttpServletResponse.SC_OK)
-                .setAccessToken(oauthIssuerImpl.accessToken())
-                .setExpiresIn("3600").buildJSONMessage();
-
-        return new ResponseEntity(response.getBody(), HttpStatus.OK);
+        return OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST)
+                .setError(responseCode).setErrorDescription(desc)
+                .buildJSONMessage();
     }
 
 }

@@ -14,4 +14,12 @@ public class OauthAuthorizationCodeService {
     public OauthAuthorizationCode save(OauthAuthorizationCode token) {
         return repo.saveAndFlush(token);
     }
+
+    public OauthAuthorizationCode findByCode(String code) {
+        try {
+            return repo.findByCode(code).get(0);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 }

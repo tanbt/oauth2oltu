@@ -19,6 +19,7 @@ import org.apache.oltu.oauth2.common.utils.OAuthUtils;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.tanbt.oauth2oltu.controllers.LoginController;
+import com.tanbt.oauth2oltu.controllers.api.TokenApi;
 
 public class OauthUtils {
 
@@ -39,11 +40,11 @@ public class OauthUtils {
 
             if (responseType.equals(ResponseType.CODE.toString())) {
                 builder.setCode(code);
-                builder.setExpiresIn(LoginController.TOKEN_EXPIRE_DURATION);
+                builder.setExpiresIn(TokenApi.TOKEN_EXPIRE_DURATION);
             }
             if (responseType.equals(ResponseType.TOKEN.toString())) {
                 builder.setAccessToken(token);
-                builder.setExpiresIn(LoginController.TOKEN_EXPIRE_DURATION);
+                builder.setExpiresIn(TokenApi.TOKEN_EXPIRE_DURATION);
             }
 
             String redirectURI = oauthRequest
