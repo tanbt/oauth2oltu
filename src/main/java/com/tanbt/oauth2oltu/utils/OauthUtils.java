@@ -89,4 +89,8 @@ public class OauthUtils {
         Date today = new Date();
         return new Date(today.getTime() + duration * 1000);
     }
+
+    public static String convertToJsonMessage(String key, String value) {
+        return String.format("{\"%s\":\"%s\"}", key, value);
+    }
 }

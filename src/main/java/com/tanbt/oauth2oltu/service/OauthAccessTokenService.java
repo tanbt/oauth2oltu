@@ -14,4 +14,13 @@ public class OauthAccessTokenService {
     public OauthAccessToken save(OauthAccessToken token) {
         return repo.saveAndFlush(token);
     }
+
+
+    public OauthAccessToken findByAccessToken(String token) {
+        try {
+            return repo.findByAccessToken(token).get(0);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 }
