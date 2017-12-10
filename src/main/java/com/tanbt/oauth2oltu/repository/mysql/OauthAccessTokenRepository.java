@@ -13,4 +13,7 @@ public interface OauthAccessTokenRepository
 
     List<OauthAccessToken> findByAccessToken(String code);
 
+    List<OauthAccessToken> findByUserId(int userId);
+
+    List<OauthAccessToken> findByClientIdAndUserId(String clientId, int userId);
 }

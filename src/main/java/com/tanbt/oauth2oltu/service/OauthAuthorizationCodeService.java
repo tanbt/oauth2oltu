@@ -1,6 +1,8 @@
 package com.tanbt.oauth2oltu.service;
 
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.tanbt.oauth2oltu.entity.OauthAuthorizationCode;
@@ -21,5 +23,26 @@ public class OauthAuthorizationCodeService {
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    public OauthAuthorizationCode findByUserId(int userId) {
+        try {
+            return repo.findByUserId(userId).get(0);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public OauthAuthorizationCode findByClientIdAndUserId(String clientId,
+            int userId) {
+        try {
+            return repo.findByClientIdAndUserId(clientId, userId).get(0);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public void delete(OauthAuthorizationCode code) {
+        repo.delete(code);
     }
 }

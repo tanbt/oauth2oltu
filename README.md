@@ -110,9 +110,9 @@ Will receive:
 RESPONSE 200 OK
 access_token_valid
 ```
-
+*Note*: the prefix **Bearer** is required in Authorization header value.
 ##### Using the Access Token in as query parameter
 `GET http://localhost:8080/api/resource_query?access_token=access_token_valid`
 
-## A client website for testing Oauth2
+## A client website for testing this Oauth2 Server
 * https://github.com/tanbt/oauth2oltu-client

@@ -93,4 +93,16 @@ public class OauthUtils {
     public static String convertToJsonMessage(String key, String value) {
         return String.format("{\"%s\":\"%s\"}", key, value);
     }
+
+    /**
+     * Check if today is later than a given day
+     *  which is usually an expired day
+     *
+     * @param expiredDay
+     * @return true if today is later than expired day
+     */
+    public static boolean isLaterThan(Date expiredDay) {
+        Date today = new Date();
+        return today.after(expiredDay);
+    }
 }

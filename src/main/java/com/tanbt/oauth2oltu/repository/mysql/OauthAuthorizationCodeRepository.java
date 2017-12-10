@@ -13,4 +13,8 @@ public interface OauthAuthorizationCodeRepository
 
     List<OauthAuthorizationCode> findByCode(String code);
 
+    List<OauthAuthorizationCode> findByUserId(int userId);
+
+    List<OauthAuthorizationCode> findByClientIdAndUserId(String clientId,
+            int userId);
 }

@@ -1,7 +1,6 @@
 package com.tanbt.oauth2oltu.controllers;
 
 import java.net.URISyntaxException;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -128,24 +127,65 @@ public class LoginController {
             String code = oauthIssuerImpl.authorizationCode();
 
             if (responseType.equals("code")) {
-                OauthAuthorizationCode oauthAuthorizationCode = new OauthAuthorizationCode(
-                        code, OauthUtils.getExpireDate(TOKEN_EXPIRE_DURATION),
-                        scope, clientId, user.getId());
-                oauthAuthorizationCodeService.save(oauthAuthorizationCode);
-            } else {
-                OauthAccessToken oauthAccessToken = new OauthAccessToken(token,
-                        clientId, scope,
-                        OauthUtils.getExpireDate(TOKEN_EXPIRE_DURATION),
-                        user.getId());
-                oauthAccessTokenService.save(oauthAccessToken);
-            }
+                OauthAuthorizationCode existedCode = getExistedAuthorizationCode(
+                        clientId, user.getId());
 
+                if (existedCode == null) {
+                    OauthAuthorizationCode oauthAuthorizationCode = new OauthAuthorizationCode(
+                            code,
+                            OauthUtils.getExpireDate(TOKEN_EXPIRE_DURATION),
+                            scope, clientId, user.getId());
+                    oauthAuthorizationCodeService.save(oauthAuthorizationCode);
+                } else {
+                    code = existedCode.getCode();
+                }
+            } else {
+                OauthAccessToken existedToken = getExistedAccessToken(clientId,
+                        user.getId());
+                if (existedToken == null) {
+                    OauthAccessToken oauthAccessToken = new OauthAccessToken(
+                            token, clientId, scope,
+                            OauthUtils.getExpireDate(TOKEN_EXPIRE_DURATION),
+                            user.getId());
+                    oauthAccessTokenService.save(oauthAccessToken);
+                } else {
+                    token = existedToken.getAccessToken();
+                }
+            }
             return OauthUtils.redirect(
                     OauthUtils.GenerateLinkAfterLogin(request, code, token));
         } else {
             return OauthUtils.redirect(
                     request.getHeader("referer") + "&msg=login-failed");
         }
+    }
+
+    private OauthAuthorizationCode getExistedAuthorizationCode(String clientId,
+            int userId) {
+        OauthAuthorizationCode code = oauthAuthorizationCodeService
+                .findByClientIdAndUserId(clientId, userId);
+        if (null != code) {
+            if (OauthUtils.isLaterThan(code.getExpires())) {    // expired
+                oauthAuthorizationCodeService.delete(code);
+            } else {
+                return code;
+            }
+        }
+        return null;
+    }
+
+    private OauthAccessToken getExistedAccessToken(String clientId,
+            int userId) {
+        OauthAccessToken token = oauthAccessTokenService
+                .findByClientIdAndUserId(clientId, userId);
+        if (null != token) {
+            if (OauthUtils.isLaterThan(token.getExpires())) {    // expired
+                oauthAccessTokenService.delete(token);
+            } else {
+                return token;
+            }
+        }
+        return null;
     }
 
     private boolean isValidOauthGetRequest(HttpServletRequest req) {

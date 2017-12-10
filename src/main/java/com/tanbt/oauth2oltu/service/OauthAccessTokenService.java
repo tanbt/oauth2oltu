@@ -15,12 +15,32 @@ public class OauthAccessTokenService {
         return repo.saveAndFlush(token);
     }
 
-
     public OauthAccessToken findByAccessToken(String token) {
         try {
             return repo.findByAccessToken(token).get(0);
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    public OauthAccessToken findByUserId(int userId) {
+        try {
+            return repo.findByUserId(userId).get(0);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public OauthAccessToken findByClientIdAndUserId(String clientId, int
+            userId) {
+        try {
+            return repo.findByClientIdAndUserId(clientId, userId).get(0);
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    public void delete(OauthAccessToken token) {
+        repo.delete(token);
     }
 }

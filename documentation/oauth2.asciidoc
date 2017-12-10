@@ -18,8 +18,13 @@ See https://github.com/tanbt/oauth2oltu/blob/master/documentation/database-schem
 
 == OAuth2 flow
 
-=== 1. Register an end-user account
+=== 1. End-user registers an end-user account
 
-=== 2. Register an OAuth client account
+=== 2. Client registers an OAuth client account
 
-=== 3.
+=== 3. End-user click to the Oauth2 Login button on Client's website
+
+=== 4. The website redirects End-user to
+
+
+http://localhost:8080/oauth/token?redirect_uri=http://localhost:8081/loginByOauth&grant_type=authorization_code&code=3463f323a0b676a44e9e5ed0480b076f&client_id=testid1234&client_secret=testid1234secret
