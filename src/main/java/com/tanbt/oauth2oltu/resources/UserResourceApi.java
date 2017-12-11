@@ -56,6 +56,24 @@ public class UserResourceApi {
         return processRequest(oauthRequest.get(), id);
     }
 
+    @RequestMapping(value = "/oauth/user", method = RequestMethod.GET, produces
+            = "application/json")
+    public ResponseEntity getResourceByHeader(
+            @Context HttpServletRequest request) {
+
+        //TODO: read access token, get userid, get scope, check if scope is
+        // user:read, and user id is correct
+        Optional<OAuthAccessResourceRequest> oauthRequest = Optional.ofNullable(
+                generateResourceRequest(request, ParameterStyle.HEADER));
+
+        return processRequest(oauthRequest.get(), -1);
+    }
+
+    /**
+     * @param oauthRequest
+     * @param id -1 means the wanting user is based on Access Token
+     * @return
+     */
     private ResponseEntity<String> processRequest(
             OAuthAccessResourceRequest oauthRequest, int id){
         // TODO: should have a method to find by token and date
@@ -80,11 +98,11 @@ public class UserResourceApi {
     }
 
     private String getUserResource(OauthAccessToken accessToken, int userId){
-        if (accessToken.getUserId() != userId) {
+        if (userId != -1 && accessToken.getUserId() != userId) {
             return "{\"msg\": \"Don't have permission to get " +
                     "this data\"}";
         }
-        User user = userService.findById(userId);
+        User user = userService.findById(accessToken.getUserId());
         Gson gson = new Gson();
 
         JsonParser parser = new JsonParser();
