@@ -11,4 +11,6 @@ import com.tanbt.oauth2oltu.entity.User;
 public interface UserRepository extends JpaRepository<User, String> {
 
     List<User> findByEmailAndPassword(String email, String password);
+
+    List<User> findById(int id);
 }

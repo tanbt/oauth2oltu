@@ -27,6 +27,10 @@ public class UserService {
 
     }
 
+    public User findById(int id) {
+        return repo.findById(id).get(0);
+    }
+
     public List<User> findAll() {
         return repo.findAll();
     }

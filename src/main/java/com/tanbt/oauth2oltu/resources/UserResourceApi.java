@@ -5,7 +5,6 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
-import org.apache.oltu.oauth2.common.exception.OAuthProblemException;
 import org.apache.oltu.oauth2.common.exception.OAuthSystemException;
 import org.apache.oltu.oauth2.common.message.types.ParameterStyle;
 import org.apache.oltu.oauth2.rs.request.OAuthAccessResourceRequest;
@@ -18,19 +17,31 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.tanbt.oauth2oltu.entity.OauthAccessToken;
+import com.tanbt.oauth2oltu.entity.User;
 import com.tanbt.oauth2oltu.service.OauthAccessTokenService;
+import com.tanbt.oauth2oltu.service.UserService;
 import com.tanbt.oauth2oltu.utils.OauthUtils;
 
 @RestController
 public class UserResourceApi {
 
     @Autowired
+    @Qualifier("userService")
+    UserService userService;
+
+    @Autowired
     @Qualifier("oauthAccessTokenService")
     OauthAccessTokenService oauthAccessTokenService;
 
     /**
-     * Read user info of the user belongs to the access token
+     * This is an example how to fetch User Resource by Access Token
+     * Only the info of the user belongs to the access token is accessible.
+     *
+     * You can develop more resources endpoint and rules to access to them.
      */
     @RequestMapping(value = "/oauth/user/{id}", method = RequestMethod.GET, produces
             = "application/json")
@@ -42,11 +53,11 @@ public class UserResourceApi {
         Optional<OAuthAccessResourceRequest> oauthRequest = Optional.ofNullable(
                 generateResourceRequest(request, ParameterStyle.HEADER));
 
-        return processRequest(oauthRequest.get());
+        return processRequest(oauthRequest.get(), id);
     }
 
     private ResponseEntity<String> processRequest(
-            OAuthAccessResourceRequest oauthRequest){
+            OAuthAccessResourceRequest oauthRequest, int id){
         // TODO: should have a method to find by token and date
         OauthAccessToken accessToken = null;
         try {
@@ -64,9 +75,23 @@ public class UserResourceApi {
                     HttpStatus.UNAUTHORIZED);
         }
 
-        return new ResponseEntity<>(
-                OauthUtils.convertToJsonMessage("msg", "Token is valid."),
-                HttpStatus.OK);
+        String responseData = getUserResource(accessToken, id);
+        return new ResponseEntity<>(responseData, HttpStatus.OK);
+    }
+
+    private String getUserResource(OauthAccessToken accessToken, int userId){
+        if (accessToken.getUserId() != userId) {
+            return "{\"msg\": \"Don't have permission to get " +
+                    "this data\"}";
+        }
+        User user = userService.findById(userId);
+        Gson gson = new Gson();
+
+        JsonParser parser = new JsonParser();
+        JsonObject userJsonObj = parser.parse(gson.toJson(user))
+                .getAsJsonObject();
+        userJsonObj.remove("password");
+        return userJsonObj.toString();
     }
 
     private OAuthAccessResourceRequest generateResourceRequest(
